@@ -10,4 +10,16 @@
     <string name="settings_cache_network_first">Network first</string>
     <string name="settings_cache_network_only">Network only</string>
     <string name="settings_cache_cache_and_network">Cache and network</string>
+    <string name="settings_clear_cache">Clear GraphQL cache</string>
+    <string name="settings_cache_cleared">GraphQL cache cleared</string>
+    <string name="settings_diagnostics">Diagnostics</string>
+    <string name="settings_network_log">Network log</string>
+    <string name="network_log_title">Network log</string>
+    <string name="network_log_clear">Clear</string>
+    <string name="network_log_filter_all">All</string>
+    <string name="network_log_filter_rest">REST</string>
+    <string name="network_log_filter_graphql">GraphQL</string>
+    <string name="network_log_empty">No requests yet. Use the app and come back.</string>
+    <string name="network_log_row">%1$s, status %2$d, %3$d ms</string>
+    <string name="network_log_cache">cache</string>
 </resources>

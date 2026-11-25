@@ -13,7 +13,10 @@ import com.roldanmatias.rickverse.core.domain.model.Page
 import com.roldanmatias.rickverse.core.domain.repository.CastRepository
 import com.roldanmatias.rickverse.core.domain.repository.EpisodeRepository
 import com.roldanmatias.rickverse.core.domain.repository.SettingsRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -31,6 +34,9 @@ internal class SwitchingCastRepository @Inject constructor(
         current().cast(page, filter)
 
     override suspend fun detail(id: Int): DomainResult<CastMemberDetail> = current().detail(id)
+
+    override fun detailUpdates(id: Int): Flow<DomainResult<CastMemberDetail>> =
+        flow { emitAll(current().detailUpdates(id)) }
 
     private suspend fun current() = if (settings.dataSource.first() == DataSource.GraphQl) graphQl else rest
 }

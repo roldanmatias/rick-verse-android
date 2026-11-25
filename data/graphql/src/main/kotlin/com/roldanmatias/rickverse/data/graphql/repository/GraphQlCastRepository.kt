@@ -18,7 +18,13 @@ import com.roldanmatias.rickverse.data.graphql.mapper.InvalidDataException
 import com.roldanmatias.rickverse.data.graphql.mapper.NotFoundException
 import com.roldanmatias.rickverse.data.graphql.mapper.toDomainError
 import com.roldanmatias.rickverse.data.graphql.mapper.toDomainOrNull
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 internal class GraphQlCastRepository @Inject constructor(
@@ -43,17 +49,43 @@ internal class GraphQlCastRepository @Inject constructor(
     /** One request: the character and all their episodes in a single selection set. */
     override suspend fun detail(id: Int): DomainResult<CastMemberDetail> =
         runCatchingDomain(mapError = Throwable::toDomainError) {
-            val character = client.query(CastMemberDetailQuery(id = id.toString()), currentPolicy()).character
-                ?: throw NotFoundException
-            val member = character.castMemberBasic.toDomainOrNull()
-                ?: throw InvalidDataException("Character $id is missing required fields")
-            CastMemberDetail(
-                member = member,
-                gender = character.gender.orEmpty(),
-                originName = character.origin?.name.orEmpty(),
-                locationName = character.location?.name.orEmpty(),
-                episodes = character.episode.mapNotNull { it?.episodeBasic?.toDomainOrNull() },
-            )
+            mapDetail(client.query(CastMemberDetailQuery(id = id.toString()), currentPolicy()), id)
+        }
+
+    private fun mapDetail(data: CastMemberDetailQuery.Data, id: Int): CastMemberDetail {
+        val character = data.character ?: throw NotFoundException
+        val member = character.castMemberBasic.toDomainOrNull()
+            ?: throw InvalidDataException("Character $id is missing required fields")
+        return CastMemberDetail(
+            member = member,
+            gender = character.gender.orEmpty(),
+            originName = character.origin?.name.orEmpty(),
+            locationName = character.location?.name.orEmpty(),
+            episodes = character.episode.mapNotNull { it?.episodeBasic?.toDomainOrNull() },
+        )
+    }
+
+    /**
+     * With the `CacheAndNetwork` policy: cached detail first (instantly), then the fresh one. With any other policy
+     * it is just [detail]. A failure after a success is the collector's to ignore (it keeps what it shows).
+     */
+    override fun detailUpdates(id: Int): Flow<DomainResult<CastMemberDetail>> =
+        flow {
+            if (settings.cachePolicy.first() != CachePolicy.CacheAndNetwork) {
+                emit(detail(id))
+            } else {
+                emitAll(
+                    client
+                        .queryUpdates(CastMemberDetailQuery(id = id.toString()))
+                        .map { data ->
+                            runCatchingDomain(mapError = Throwable::toDomainError) { mapDetail(data, id) }
+                        }
+                        .catch { error ->
+                            if (error is CancellationException) throw error
+                            emit(DomainResult.Failure(error.toDomainError()))
+                        },
+                )
+            }
         }
 
     private suspend fun currentPolicy(): FetchPolicy = settings.cachePolicy.first().toFetchPolicy()

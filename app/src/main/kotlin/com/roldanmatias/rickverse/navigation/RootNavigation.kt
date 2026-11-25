@@ -31,6 +31,7 @@ import com.roldanmatias.rickverse.feature.characters.ui.CastDetailRoute
 import com.roldanmatias.rickverse.feature.characters.ui.CastListRoute
 import com.roldanmatias.rickverse.feature.episodes.ui.EpisodeDetailRoute
 import com.roldanmatias.rickverse.feature.episodes.ui.EpisodeListRoute
+import com.roldanmatias.rickverse.feature.settings.ui.NetworkLogRoute
 import com.roldanmatias.rickverse.feature.settings.ui.SettingsRoute
 import kotlin.reflect.KClass
 
@@ -115,7 +116,10 @@ internal fun RootNavigation(modifier: Modifier = Modifier) {
                 }
             }
             navigation<Route.SettingsGraph>(startDestination = Route.Settings) {
-                composable<Route.Settings> { SettingsRoute() }
+                composable<Route.Settings> {
+                    SettingsRoute(onOpenNetworkLog = { navController.navigate(Route.NetworkLog) })
+                }
+                composable<Route.NetworkLog> { NetworkLogRoute(onBack = navController::navigateUp) }
             }
         }
     }

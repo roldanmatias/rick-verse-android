@@ -212,3 +212,33 @@ the ViewModel-scoping subtlety (`key()` alone does not clear ViewModels).
 
 **Not verified here:** the reset-on-switch flow was not exercised on a device (no emulator); the pieces are unit tested
 but the `LocalViewModelStoreOwner` override is the riskiest part to confirm manually.
+
+## Phase 8: shared interceptors, network log, cache policies
+
+**One observability pipeline.** Apollo runs on the shared `OkHttpClient`, so headers, retry, metrics and logging already
+cover GraphQL. GraphQL queries are POSTs, which `RetryInterceptor` refuses to retry; Apollo calls add `X-Retry-Safe` so
+read-only queries are retried and mutations (when they exist) are not.
+
+**Two layers, two views.**
+| | OkHttp `MetricsInterceptor` | Apollo `CacheEventInterceptor` |
+|---|---|---|
+| Sees | every HTTP exchange, status, bytes, retries | operation name, cache hit/miss |
+| Misses | cache hits (no HTTP happens) | nothing about HTTP |
+| Logs | network calls only | **cache hits only** (to avoid double counting) |
+The interceptor is added *before* `normalizedCache` so it sits outside the cache interceptor and sees `cacheInfo`.
+
+**Stale-while-revalidate.** `CastRepository.detailUpdates(id): Flow` has a default (emit `detail` once: REST). GraphQL with
+the `CacheAndNetwork` policy emits cache then network; a cold-cache `CacheMissException` is skipped, not a failure.
+`CastDetailViewModel` collects it: each emission replaces state, and a failure *after* data is shown is ignored
+(stale beats an error screen). To avoid UI jumping: same list keys (`key = { it.id }`) and no scroll reset, so the second
+emission is a diff, not a rebuild.
+
+**Persistent cache.** Memory LRU (2 MB) chained in front of SQLite (`SqlNormalizedCacheFactory`). Eviction is by size;
+invalidation is manual (Settings -> Clear GraphQL cache). Not configured: time-based `maxAge`, so cached data never
+expires on its own; a real app would set max ages per type and use `maxStale` on fetch.
+
+**Cache lib 1.0.9 notes.** `ApolloClient.apolloStore.clearAll()`; `response.cacheInfo?.isCacheHit`; `CacheMissException` is
+in `apollo.exception`.
+
+**Not verified here:** airplane-mode cold start, SQLite cache on a device, and the network log screen were not run
+(no emulator). Device timings are a TODO in `docs/benchmark.md`.

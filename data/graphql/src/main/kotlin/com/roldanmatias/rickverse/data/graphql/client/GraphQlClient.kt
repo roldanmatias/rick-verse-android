@@ -1,6 +1,7 @@
 package com.roldanmatias.rickverse.data.graphql.client
 
 import com.apollographql.apollo.api.Query
+import kotlinx.coroutines.flow.Flow
 
 /**
  * The only Apollo surface repositories see. Returns the operation's data (possibly partial, see ADR 0006) or throws
@@ -9,6 +10,9 @@ import com.apollographql.apollo.api.Query
  */
 internal interface GraphQlClient {
     suspend fun <D : Query.Data> query(query: Query<D>, policy: FetchPolicy): D
+
+    /** Cache first, then network: emits the cached data (if any) and then the fresh data. Throws on failure. */
+    fun <D : Query.Data> queryUpdates(query: Query<D>): Flow<D>
 }
 
 /** Our cache policy vocabulary, mapped to Apollo's in exactly one place ([ApolloGraphQlClient]). */

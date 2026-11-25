@@ -6,6 +6,7 @@ import com.roldanmatias.rickverse.core.domain.model.CastMember
 import com.roldanmatias.rickverse.core.domain.model.CastMemberDetail
 import com.roldanmatias.rickverse.core.domain.model.Page
 import com.roldanmatias.rickverse.core.domain.repository.CastRepository
+import kotlinx.coroutines.flow.Flow
 import java.util.Collections
 
 /**
@@ -29,6 +30,12 @@ public class FakeCastRepository : CastRepository {
 
     public var detailHandler: suspend (id: Int) -> DomainResult<CastMemberDetail> =
         { DomainResult.Success(TestData.castMemberDetail(member = TestData.castMember(id = it))) }
+
+    /** When set, [detailUpdates] uses this stream (cache-then-network); otherwise it emits [detail] once. */
+    public var updatesHandler: ((id: Int) -> Flow<DomainResult<CastMemberDetail>>)? = null
+
+    override fun detailUpdates(id: Int): Flow<DomainResult<CastMemberDetail>> =
+        updatesHandler?.invoke(id) ?: super.detailUpdates(id)
 
     override suspend fun cast(page: Int, filter: CastFilter): DomainResult<Page<CastMember>> {
         recordedCastCalls += CastCall(page, filter)

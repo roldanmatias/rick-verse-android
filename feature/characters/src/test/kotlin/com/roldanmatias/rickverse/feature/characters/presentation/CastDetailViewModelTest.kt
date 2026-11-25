@@ -7,6 +7,7 @@ import com.roldanmatias.rickverse.core.domain.usecase.GetCastMemberDetailUseCase
 import com.roldanmatias.rickverse.core.testing.FakeCastRepository
 import com.roldanmatias.rickverse.core.testing.MainDispatcherRule
 import com.roldanmatias.rickverse.core.testing.TestData
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -56,5 +57,30 @@ class CastDetailViewModelTest {
         assertThrows(IllegalStateException::class.java) {
             CastDetailViewModel(GetCastMemberDetailUseCase(repository), SavedStateHandle())
         }
+    }
+
+    @Test
+    fun `cached value is shown first and replaced silently by the fresh one`() = runTest(mainRule.dispatcher) {
+        val cached = TestData.castMemberDetail(episodes = listOf(TestData.episode(1)))
+        val fresh = TestData.castMemberDetail(episodes = listOf(TestData.episode(1), TestData.episode(2)))
+        repository.updatesHandler = { flowOf(DomainResult.Success(cached), DomainResult.Success(fresh)) }
+
+        val viewModel = viewModel()
+        advanceUntilIdle()
+
+        assertEquals(CastDetailUiState.Loaded(fresh), viewModel.uiState.value)
+    }
+
+    @Test
+    fun `a failing revalidation keeps the cached data on screen`() = runTest(mainRule.dispatcher) {
+        val cached = TestData.castMemberDetail()
+        repository.updatesHandler = {
+            flowOf(DomainResult.Success(cached), DomainResult.Failure(DomainError.Offline))
+        }
+
+        val viewModel = viewModel()
+        advanceUntilIdle()
+
+        assertEquals(CastDetailUiState.Loaded(cached), viewModel.uiState.value)
     }
 }

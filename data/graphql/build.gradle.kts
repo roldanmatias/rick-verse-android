@@ -10,6 +10,7 @@ dependencies {
     implementation(projects.core.network)
     implementation(libs.apollo.runtime)
     implementation(libs.apollo.cache)
+    implementation(libs.apollo.cache.sqlite)
     implementation(libs.okhttp)
     implementation(libs.kotlinx.coroutines.android)
 

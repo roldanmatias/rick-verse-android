@@ -7,11 +7,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -29,10 +34,18 @@ import com.roldanmatias.rickverse.feature.settings.presentation.SettingsUiState
 import com.roldanmatias.rickverse.feature.settings.presentation.SettingsViewModel
 
 @Composable
-public fun SettingsRoute(modifier: Modifier = Modifier) {
+public fun SettingsRoute(onOpenNetworkLog: () -> Unit, modifier: Modifier = Modifier) {
     val viewModel: SettingsViewModel = hiltViewModel()
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    SettingsScreen(state, viewModel::onDataSourceSelected, viewModel::onCachePolicySelected, modifier)
+    SettingsScreen(
+        state = state,
+        onDataSource = viewModel::onDataSourceSelected,
+        onCachePolicy = viewModel::onCachePolicySelected,
+        onClearCache = viewModel::onClearCache,
+        onCacheClearedShown = viewModel::onCacheClearedShown,
+        onOpenNetworkLog = onOpenNetworkLog,
+        modifier = modifier,
+    )
 }
 
 @Composable
@@ -40,9 +53,24 @@ internal fun SettingsScreen(
     state: SettingsUiState,
     onDataSource: (DataSource) -> Unit,
     onCachePolicy: (CachePolicy) -> Unit,
+    onClearCache: () -> Unit,
+    onCacheClearedShown: () -> Unit,
+    onOpenNetworkLog: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Scaffold(modifier = modifier, topBar = { RickVerseTopBar(stringResource(R.string.settings_title)) }) { padding ->
+    val snackbar = remember { SnackbarHostState() }
+    val clearedMessage = stringResource(R.string.settings_cache_cleared)
+    LaunchedEffect(state.cacheCleared) {
+        if (state.cacheCleared) {
+            snackbar.showSnackbar(clearedMessage)
+            onCacheClearedShown()
+        }
+    }
+    Scaffold(
+        modifier = modifier,
+        topBar = { RickVerseTopBar(stringResource(R.string.settings_title)) },
+        snackbarHost = { SnackbarHost(snackbar) },
+    ) { padding ->
         Column(Modifier.padding(padding).padding(16.dp)) {
             Section(stringResource(R.string.settings_data_source))
             Options(
@@ -63,6 +91,11 @@ internal fun SettingsScreen(
                 label = { stringResource(it.labelRes()) },
                 onSelect = onCachePolicy,
             )
+            OutlinedButton(onClick = onClearCache, Modifier.padding(top = 8.dp)) {
+                Text(stringResource(R.string.settings_clear_cache))
+            }
+            Section(stringResource(R.string.settings_diagnostics), Modifier.padding(top = 24.dp))
+            OutlinedButton(onClick = onOpenNetworkLog) { Text(stringResource(R.string.settings_network_log)) }
         }
     }
 }

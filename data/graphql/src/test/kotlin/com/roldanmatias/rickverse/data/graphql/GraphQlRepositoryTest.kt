@@ -5,14 +5,17 @@ import com.roldanmatias.rickverse.core.domain.error.DomainResult
 import com.roldanmatias.rickverse.core.domain.model.CachePolicy
 import com.roldanmatias.rickverse.core.domain.model.CastFilter
 import com.roldanmatias.rickverse.core.domain.model.CastMember
+import com.roldanmatias.rickverse.core.network.NetworkLog
 import com.roldanmatias.rickverse.core.network.OkHttpClientFactory
 import com.roldanmatias.rickverse.core.testing.FakeSettingsRepository
 import com.roldanmatias.rickverse.core.testing.Fixtures
 import com.roldanmatias.rickverse.core.testing.MockWebServerRule
 import com.roldanmatias.rickverse.data.graphql.client.ApolloGraphQlClient
 import com.roldanmatias.rickverse.data.graphql.client.createApolloClient
+import com.roldanmatias.rickverse.data.graphql.repository.ApolloCacheMaintenance
 import com.roldanmatias.rickverse.data.graphql.repository.GraphQlCastRepository
 import com.roldanmatias.rickverse.data.graphql.repository.GraphQlEpisodeRepository
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -163,5 +166,65 @@ class GraphQlRepositoryTest {
         assertEquals("S01E01", page.items.first().code)
         assertEquals("Pilot", detail.episode.name)
         assertEquals(19, detail.cast.size)
+    }
+
+    @Test
+    fun `detailUpdates with CacheAndNetwork emits cached data first, then the fresh network data`() = runBlocking {
+        val repository =
+            GraphQlCastRepository(client, FakeSettingsRepository(initialCachePolicy = CachePolicy.CacheAndNetwork))
+        web.enqueueJson(Fixtures.load("cast_detail_1.json"))
+        repository.detail(1).value() // warm the normalized cache
+        web.enqueueJson(
+            Fixtures.load("cast_detail_1.json").replace("Citadel of Ricks", "Earth (Replacement Dimension)"),
+        )
+
+        val emissions = repository.detailUpdates(1).toList().map { it.value().locationName }
+
+        assertEquals(listOf("Citadel of Ricks", "Earth (Replacement Dimension)"), emissions)
+    }
+
+    @Test
+    fun `detailUpdates with another policy emits exactly once`() = runBlocking {
+        web.enqueueJson(Fixtures.load("cast_detail_1.json"))
+
+        assertEquals(1, casts.detailUpdates(1).toList().size)
+    }
+
+    @Test
+    fun `detailUpdates on a cold cache skips the miss and emits the network result`() = runBlocking {
+        val repository =
+            GraphQlCastRepository(client, FakeSettingsRepository(initialCachePolicy = CachePolicy.CacheAndNetwork))
+        web.enqueueJson(Fixtures.load("cast_detail_1.json"))
+
+        assertEquals(1, repository.detailUpdates(1).toList().size)
+    }
+
+    @Test
+    fun `clearing the cache forces the next CacheFirst call to the network`() = runBlocking {
+        val apollo = createApolloClient(web.baseUrl("/graphql").toString(), OkHttpClientFactory.create())
+        val repository = GraphQlCastRepository(ApolloGraphQlClient(apollo), FakeSettingsRepository())
+        web.enqueueJson(Fixtures.load("cast_detail_1.json"))
+        web.enqueueJson(Fixtures.load("cast_detail_1.json"))
+
+        repository.detail(1).value()
+        ApolloCacheMaintenance(apollo).clearCache()
+        repository.detail(1).value()
+
+        assertEquals(2, web.server.requestCount)
+    }
+
+    @Test
+    fun `cache hits are written to the network log, network calls are left to OkHttp`() = runBlocking {
+        val log = NetworkLog()
+        val apollo = createApolloClient(web.baseUrl("/graphql").toString(), OkHttpClientFactory.create(), log = log)
+        val repository = GraphQlCastRepository(ApolloGraphQlClient(apollo), FakeSettingsRepository())
+        web.enqueueJson(Fixtures.load("cast_detail_1.json"))
+
+        repository.detail(1).value() // network: not logged by the Apollo layer
+        repository.detail(1).value() // cache hit
+
+        val event = log.events.value.single()
+        assertEquals("CastMemberDetail", event.label)
+        assertTrue(event.servedFromCache)
     }
 }
