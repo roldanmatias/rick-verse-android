@@ -30,6 +30,9 @@ kover {
                     "*ComposableSingletons*",
                     "*.MainActivity*", "*.RickVerseApp*",
                 )
+                // Test fixtures are not production code; thin wrappers around the platform add no signal.
+                packages("com.roldanmatias.rickverse.core.testing", "*.ui.theme")
+                classes("*.DefaultDispatcherProvider")
                 annotatedBy("androidx.compose.ui.tooling.preview.Preview")
             }
         }

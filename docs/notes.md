@@ -23,3 +23,23 @@ for coroutines (Flow is in its public interfaces) and `javax.inject` (qualifiers
 * Compose BOM 2026.11 needs `compileSdk` 37.1 (`release(37) { minorApiLevel = 1 }`).
 * detekt 1.23 cannot parse the JDK 25 version string, so the build uses detekt 2.0 (`dev.detekt`), whose config keys differ.
 * AGP forbids `javac --release`; pure JVM modules use it, Android modules use `compileOptions`.
+
+## Phase 1: Domain
+
+**Isn't a use case that only trims a string and forwards it over-engineering?**
+In a tiny app the ViewModel could call the repository directly. The use case is a stable seam: one obvious place for
+the rule (blank search means no filter), identical behaviour for every screen and both data sources, and a unit
+that is trivially testable. I would drop the use cases that are pure pass-through if the app stayed this size and had
+no second data source; here they keep ViewModels depending on one narrow type each.
+
+**Why `DomainResult` and not exceptions?** See ADR 0002. The key risk to explain is `CancellationException`: a
+`catch (e: Exception)` swallows it and breaks structured concurrency, so `runCatchingDomain` rethrows it and a test
+proves that.
+
+**Why is Domain a pure Kotlin module?** The compiler enforces that it cannot import `android.*`, Retrofit, OkHttp
+or Apollo. `./gradlew :core:domain:dependencies --configuration runtimeClasspath` lists only the Kotlin stdlib,
+coroutines and `javax.inject`.
+
+**Compose stability and Domain**: Domain has no `@Immutable`. With strong skipping (default in current Compose)
+unstable parameters are compared by instance equality and lambdas are memoized, and
+`config/compose/stability.conf` marks Domain model packages stable without a Compose dependency.

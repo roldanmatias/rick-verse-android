@@ -8,7 +8,7 @@ style:
     ignoreAnnotation: true
     ignoreNamedArgument: true
     ignoreExtensionFunctions: true
-    excludes: ['**/test/**', '**/androidTest/**', '**/ui/theme/**']
+    excludes: ['**/test/**', '**/androidTest/**', '**/ui/theme/**', '**/core/testing/**']
   ReturnCount:
     max: 3
   ForbiddenComment:
