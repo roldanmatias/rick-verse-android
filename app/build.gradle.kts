@@ -10,6 +10,7 @@ android {
         applicationId = "com.roldanmatias.rickverse"
         versionCode = 1
         versionName = "0.1.0"
+        testInstrumentationRunner = "com.roldanmatias.rickverse.HiltTestRunner"
     }
 }
 
@@ -40,6 +41,10 @@ dependencies {
 
     testImplementation(projects.core.testing)
 
+    androidTestImplementation(projects.core.testing)
+    androidTestImplementation(libs.hilt.android.testing)
+    kspAndroidTest(libs.hilt.compiler)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.espresso.core)
 }

@@ -20,7 +20,7 @@ import javax.inject.Inject
  * a fresh back stack. Because this holder is itself a ViewModel, a rotation keeps the current epoch (no reload).
  */
 @HiltViewModel
-internal class DataSourceScopes @Inject constructor(settings: SettingsRepository) : ViewModel() {
+internal class DataSourceScopesViewModel @Inject constructor(settings: SettingsRepository) : ViewModel() {
     /** `null` until DataStore has delivered the stored value, so the UI never flashes the wrong source. */
     val dataSource: StateFlow<DataSource?> =
         settings.dataSource.stateIn(viewModelScope, SharingStarted.Eagerly, null)

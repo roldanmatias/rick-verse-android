@@ -10,6 +10,20 @@ fixtures); **timings and bytes on a device are not measured yet** (see the check
 | GraphQL, network | 1 | `GraphQlRepositoryTest` (`detail is one request`) | nested `episode { ...EpisodeBasic }` |
 | GraphQL, `CacheFirst`, second open | 0 | `GraphQlRepositoryTest` (`CacheFirst serves the second identical call`) | normalized cache hit |
 
+## JVM run against the live API (single run, dev laptop, not averaged)
+Produced by `./gradlew :contract-tests:benchmarkTest` (`BENCHMARK_OUTPUT=file` writes the table). Sequential requests,
+home internet, one run: indicative only; a phone on mobile data will differ. Request counts are exact.
+
+| Strategy | Requests | Total ms |
+|---|---:|---:|
+| REST naive (sequential) | 52 | 6039 |
+| REST batch | 2 | 999 |
+| GraphQL network | 1 | 831 |
+
+Finding: running the 52-request naive strategy *first* got the client rate-limited by the API's Cloudflare layer
+(error 1015, the response body is not JSON) on the very next call. The benchmark therefore runs the cheap strategies first
+and cools down before the naive one. N+1 is not just slow, it is hostile to the server.
+
 ## What the numbers mean
 * The naive version scales with the data (N+1); batch and GraphQL do not. The fix on REST is an API feature (the batch
   endpoint), not a client trick, and it costs a second round trip that GraphQL avoids by nesting.

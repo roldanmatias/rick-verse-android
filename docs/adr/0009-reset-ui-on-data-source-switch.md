@@ -9,7 +9,7 @@ screen. Options: (a) `key(dataSource) { ... }` and reset the back stack; (b) eac
 
 ## Decision
 A variant of (a). `key(dataSource)` rebuilds composition (new `NavController`, so a fresh back stack), **and** the
-subtree is given a `ViewModelStoreOwner` owned by an Activity-scoped `DataSourceScopes` ViewModel, one store per
+subtree is given a `ViewModelStoreOwner` owned by an Activity-scoped `DataSourceScopesViewModel` ViewModel, one store per
 data source ("epoch"). After a switch the old epoch's store is cleared, destroying all of its ViewModels.
 
 Why not plain `key`: ViewModels are scoped to a `ViewModelStoreOwner` (the Activity or a back stack entry), not to

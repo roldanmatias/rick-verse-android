@@ -49,6 +49,8 @@ include(":core:testing")
 // Data
 include(":data:rest")
 include(":data:graphql")
+include(":architecture-tests")
+include(":contract-tests")
 // include(":data:local")   // Phase 10
 
 // Features

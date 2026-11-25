@@ -242,3 +242,29 @@ in `apollo.exception`.
 
 **Not verified here:** airplane-mode cold start, SQLite cache on a device, and the network log screen were not run
 (no emulator). Device timings are a TODO in `docs/benchmark.md`.
+
+## Phase 9: testing strategy
+
+**Pyramid in this repo.** Domain/ViewModel/data tests on the JVM with fakes and MockWebServer; Compose UI tests on the JVM
+through Robolectric; screenshot tests (Roborazzi); a Hilt end-to-end test (instrumented); Konsist architecture tests;
+gated contract and benchmark suites against the live API.
+
+**Architecture tests found two real problems on first run** (rules earn their keep): test classes were swept into "use
+case" and "DTO" scopes (fixed by scoping to production code), and a `@HiltViewModel` called `DataSourceScopes` broke the
+`*ViewModel` naming rule (renamed). `scripts/check-architecture.sh` is the Gradle-free version of the import rules.
+
+**Contract/benchmark gating.** Tests live in `:contract-tests`, skipped by JUnit `Assume` in a normal `test`, and run by
+`contractTest` / `benchmarkTest` (not wired into `check`) so a third-party outage can never fail a PR. The live benchmark
+hit the API's rate limiter (Cloudflare 1015) when the 52-request naive run came first: see `docs/benchmark.md`.
+
+**Screenshots.** `recordRoborazziDebug` writes goldens, `verifyRoborazziDebug` compares; a plain `test` captures nothing,
+so the default gate stays deterministic. Native graphics rendering differs by OS: the goldens in the repo were recorded
+on macOS, so a Linux CI verify may need its own recorded baseline (TODO when the CI job is added).
+
+**Coverage.** Gate raised from 60 to 80. The figure excludes composables, DI modules, navigation, design system, Apollo
+generated code and test fixtures (UI is covered by UI/screenshot/e2e tests, not line coverage). Measured: ~95% of what
+remains. Be able to say that out loud: the number is high because the denominator is deliberately logic-only.
+
+**E2E.** `HiltTestRunner` + `@TestInstallIn` replacing `RepositoryModule` with fakes; semantic matchers only.
+`compose.ui.test.junit4.v2.createAndroidComposeRule` (the old one is deprecated: v2 uses `StandardTestDispatcher`).
+**Not run here** (no emulator): it compiles, it has not executed. First thing to run: `./gradlew :app:connectedDebugAndroidTest`.

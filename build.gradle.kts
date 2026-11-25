@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.hilt) apply false
     alias(libs.plugins.apollo) apply false
+    alias(libs.plugins.roborazzi) apply false
     alias(libs.plugins.detekt) apply false
     alias(libs.plugins.spotless) apply false
     alias(libs.plugins.kover)
@@ -33,14 +34,25 @@ kover {
                 )
                 // Test fixtures are not production code; thin wrappers around the platform add no signal.
                 packages("com.roldanmatias.rickverse.core.testing", "*.ui.theme")
+                // Composition code and wiring: covered by UI/screenshot/e2e tests, not by line coverage (the guide's
+                // advice: do not chase coverage on composables). Logic lives in ViewModels, mappers and use cases.
+                packages(
+                    "com.roldanmatias.rickverse.feature.*.ui",
+                    "com.roldanmatias.rickverse.core.designsystem.*",
+                    "com.roldanmatias.rickverse.navigation",
+                    "*.di",
+                    // Apollo codegen output is not our code.
+                    "com.roldanmatias.rickverse.data.graphql.generated*",
+                )
+                classes("*.core.ui.*Kt", "*.core.ui.DataSourceChip*", "*.DataSourceScopesViewModel*", "*.Route*")
+                annotatedBy("androidx.compose.runtime.Composable")
                 classes("*.DefaultDispatcherProvider")
                 annotatedBy("androidx.compose.ui.tooling.preview.Preview")
             }
         }
         verify {
             rule("Minimum line coverage") {
-                // Start low, ratchet to 80% as the test suite grows (Phase 9).
-                minBound(60)
+                minBound(80)
             }
         }
     }
