@@ -43,3 +43,33 @@ coroutines and `javax.inject`.
 **Compose stability and Domain**: Domain has no `@Immutable`. With strong skipping (default in current Compose)
 unstable parameters are compared by instance equality and lambdas are memoized, and
 `config/compose/stability.conf` marks Domain model packages stable without a Compose dependency.
+
+## Phase 2: networking
+
+**Application vs network interceptors.** Application interceptors see the logical request once, may call `proceed` more
+than once, and see cached responses; network interceptors see every hop (redirects, retries) as sent on the wire, and
+are skipped on cache hits. So: retry = application (it must re-`proceed`), metrics = application (one event per logical
+call, includes retries and cache hits), logging = network (the real wire traffic).
+
+**Why only retry idempotent requests?** Repeating a non-idempotent request (POST) can duplicate a side effect. A GraphQL
+*query* is a POST but read-only, so it opts in with `X-Retry-Safe`. To retry a real POST safely you need an
+idempotency key the server de-duplicates on.
+
+**Thundering herd.** Delay is `random(0..base*2^attempt)` (full jitter) so clients that failed together do not retry
+together. `Retry-After` wins when the server tells us when to come back (capped at 30 s so a bad header cannot park a thread).
+
+**Single-flight token refresh.** Five requests get 401 with the same expired token. `TokenAuthenticator` takes a `Mutex`;
+the first one refreshes and saves, the others see the stored token changed and just reuse it. A test asserts one refresh.
+
+**Cancellation to the socket.** `viewModelScope.cancel()` -> the Retrofit suspend call's `Call.cancel()` -> OkHttp closes
+the socket. A cancelled request is not an error to show: `toNetworkError()` rethrows `CancellationException`, and the retry
+interceptor checks `chain.call().isCanceled()` before every attempt.
+
+**OkHttp HTTP cache vs my own Room cache.** HTTP cache honours `Cache-Control`/`ETag` and is transparent, good for
+GET responses the server marks cacheable. A database is for offline-first: it is the source of truth, survives
+eviction, is queryable and can be observed. This API sends no useful cache headers, hence Room in Phase 10.
+
+**Timeouts (10/20/20/30 s)** are in `NetworkConfig` with the reasoning in its KDoc.
+
+**Environment finding:** OkHttp 5 ships MockWebServer as `mockwebserver3` (`MockResponse.Builder()`,
+`server.close()`), not the old `okhttp3.mockwebserver` API.
