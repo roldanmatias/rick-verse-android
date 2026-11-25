@@ -45,3 +45,8 @@ the second is label-gated, so they do not always report and a required check tha
 - [ ] Throwaway PR adding `import androidx.compose.ui.Modifier` to a ViewModel: screenshot the red annotation, close it
 - [ ] First green nightly `contract.yml` run; first Pages deploy; `v0.1.0` tag and release
 - [ ] README badges (Phase 13)
+
+## AI review (Phase 12)
+- [ ] Secret `ANTHROPIC_API_KEY` (repository secret; not available to fork PRs by design)
+- [ ] Install the Claude GitHub app on the repo; confirm the pinned `claude-code-action` still supports the inputs used
+- [ ] Do not make `ai-review` a required check (it is advisory)

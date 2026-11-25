@@ -319,3 +319,13 @@ Written and YAML-validated only: **no workflow has executed**, as the repo is no
 * Dokka is applied via the quality convention plugin and aggregated at the root (`dokkaGeneratePublicationHtml`, verified locally).
 * The Apollo schema download is deterministic (re-running it produced no diff), which is what makes the drift check trustworthy.
 * The Play upload step is a deliberate placeholder (fails) rather than a pretend integration.
+
+## Phase 12: AI in the workflow
+
+* `CLAUDE.md` (47 lines) is deliberately short: module rule, commands, conventions, "never" list, known gaps.
+* Hook tested locally: it exits 2 for `data/local/schemas/*` and 0 for ordinary source files.
+* `ai-review.yml` is YAML-validated only (never run). Untrusted-input handling is the interview point: no
+  `pull_request_target`, forks skipped, read-only tools, no merge rights.
+* Not done: the in-product AI feature (12.6), CI-failure/dependabot triage jobs (12.5), and any measurement (12.8).
+  **There is no data on whether AI helped here.** Track PR cycle time, actionable comments per PR and noisy prompts
+  once the repo is live, and record real numbers here rather than claims.
