@@ -4,9 +4,7 @@ import okhttp3.Interceptor
 import okhttp3.Response
 
 /** Adds `Accept` and `User-Agent` to every request. Headers already set by the caller win. */
-public class DefaultHeadersInterceptor(
-    private val userAgent: String = DEFAULT_USER_AGENT,
-) : Interceptor {
+public class DefaultHeadersInterceptor(private val userAgent: String = DEFAULT_USER_AGENT) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val original = chain.request()
         val request =

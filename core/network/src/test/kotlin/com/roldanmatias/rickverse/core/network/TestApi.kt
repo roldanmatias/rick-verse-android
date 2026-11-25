@@ -11,15 +11,10 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 @Serializable
-data class TestCharacter(
-    val id: Int,
-    val name: String,
-)
+data class TestCharacter(val id: Int, val name: String)
 
 @Serializable
-data class TestPage(
-    val results: List<TestCharacter>,
-)
+data class TestPage(val results: List<TestCharacter>)
 
 interface TestApi {
     @GET("character")

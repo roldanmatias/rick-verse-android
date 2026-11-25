@@ -14,13 +14,9 @@ import kotlinx.serialization.json.JsonDecoder
  * **object**. This wrapper accepts both shapes, so callers never special-case a batch of one.
  */
 @Serializable(with = OneOrManySerializer::class)
-internal class OneOrMany<T>(
-    val items: List<T>,
-)
+internal class OneOrMany<T>(val items: List<T>)
 
-internal class OneOrManySerializer<T>(
-    elementSerializer: KSerializer<T>,
-) : KSerializer<OneOrMany<T>> {
+internal class OneOrManySerializer<T>(elementSerializer: KSerializer<T>) : KSerializer<OneOrMany<T>> {
     private val listSerializer = ListSerializer(elementSerializer)
 
     override val descriptor: SerialDescriptor = listSerializer.descriptor

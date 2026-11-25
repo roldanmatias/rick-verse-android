@@ -14,9 +14,7 @@ public sealed interface PaginationState {
     public data object Loading : PaginationState
 
     /** The last attempt failed; the items already loaded are kept. */
-    public data class Failed(
-        val error: DomainError,
-    ) : PaginationState
+    public data class Failed(val error: DomainError) : PaginationState
 
     /** There is nothing more to load. */
     public data object Exhausted : PaginationState

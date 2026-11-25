@@ -11,10 +11,7 @@ import java.net.UnknownHostException
 import kotlin.coroutines.cancellation.CancellationException
 
 @RunWith(Parameterized::class)
-class ErrorMapperTest(
-    private val input: NetworkError,
-    private val expected: DomainError,
-) {
+class ErrorMapperTest(private val input: NetworkError, private val expected: DomainError) {
     @Test
     fun `maps to the domain error`() {
         assertEquals(expected, input.toDomainError())

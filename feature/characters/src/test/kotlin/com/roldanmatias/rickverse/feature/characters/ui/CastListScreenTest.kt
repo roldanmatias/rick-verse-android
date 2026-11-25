@@ -45,10 +45,10 @@ class CastListScreenTest {
         CastListUiState(
             phase = CastListUiState.Phase.Loaded,
             items =
-                listOf(
-                    TestData.castMember(id = 1, name = "Rick Sanchez", species = "Human"),
-                    TestData.castMember(2, "Morty Smith", CastMember.Status.Dead, "Human"),
-                ),
+            listOf(
+                TestData.castMember(id = 1, name = "Rick Sanchez", species = "Human"),
+                TestData.castMember(2, "Morty Smith", CastMember.Status.Dead, "Human"),
+            ),
         )
 
     @Test

@@ -21,11 +21,7 @@ private val DarkColors = darkColorScheme(primary = PortalGreenLight, secondary =
 
 /** Colours with a meaning beyond Material's scheme. */
 @Immutable
-public data class StatusColors(
-    val positive: Color,
-    val negative: Color,
-    val neutral: Color,
-)
+public data class StatusColors(val positive: Color, val negative: Color, val neutral: Color)
 
 private val LightStatusColors = StatusColors(StatusAlive, StatusDead, StatusNeutral)
 private val DarkStatusColors = StatusColors(StatusAliveDark, StatusDeadDark, StatusNeutralDark)

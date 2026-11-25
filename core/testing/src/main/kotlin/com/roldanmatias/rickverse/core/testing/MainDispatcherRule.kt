@@ -17,9 +17,7 @@ import org.junit.runner.Description
  * test's control.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
-public class MainDispatcherRule(
-    public val dispatcher: TestDispatcher = StandardTestDispatcher(),
-) : TestWatcher() {
+public class MainDispatcherRule(public val dispatcher: TestDispatcher = StandardTestDispatcher()) : TestWatcher() {
     override fun starting(description: Description) {
         Dispatchers.setMain(dispatcher)
     }
@@ -30,9 +28,7 @@ public class MainDispatcherRule(
 }
 
 /** A [DispatcherProvider] where every dispatcher is the same [dispatcher]. */
-public class TestDispatcherProvider(
-    dispatcher: CoroutineDispatcher,
-) : DispatcherProvider {
+public class TestDispatcherProvider(dispatcher: CoroutineDispatcher) : DispatcherProvider {
     override val main: CoroutineDispatcher = dispatcher
     override val io: CoroutineDispatcher = dispatcher
     override val default: CoroutineDispatcher = dispatcher

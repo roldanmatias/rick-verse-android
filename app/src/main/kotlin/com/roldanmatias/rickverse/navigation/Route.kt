@@ -18,17 +18,13 @@ internal sealed interface Route {
     data object CastList : Route
 
     @Serializable
-    data class CastDetail(
-        val id: Int,
-    ) : Route
+    data class CastDetail(val id: Int) : Route
 
     @Serializable
     data object EpisodeList : Route
 
     @Serializable
-    data class EpisodeDetail(
-        val id: Int,
-    ) : Route
+    data class EpisodeDetail(val id: Int) : Route
 
     @Serializable
     data object Settings : Route

@@ -103,11 +103,11 @@ private fun Content(
             EmptyState(
                 title = stringResource(R.string.characters_empty_title),
                 message =
-                    if (state.query.isBlank()) {
-                        stringResource(R.string.characters_empty_no_query)
-                    } else {
-                        stringResource(R.string.characters_empty_message, state.query.trim())
-                    },
+                if (state.query.isBlank()) {
+                    stringResource(R.string.characters_empty_no_query)
+                } else {
+                    stringResource(R.string.characters_empty_message, state.query.trim())
+                },
             )
         }
 

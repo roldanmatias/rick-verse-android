@@ -27,29 +27,21 @@ internal data class CastListUiState(
         data object Empty : Phase
 
         /** The first page failed. With non-empty items, a refresh failed and the list is kept. */
-        data class Failed(
-            val error: DomainError,
-        ) : Phase
+        data class Failed(val error: DomainError) : Phase
     }
 }
 
 internal sealed interface CastListIntent {
-    data class QueryChanged(
-        val text: String,
-    ) : CastListIntent
+    data class QueryChanged(val text: String) : CastListIntent
 
-    data class StatusSelected(
-        val status: CastMember.Status?,
-    ) : CastListIntent
+    data class StatusSelected(val status: CastMember.Status?) : CastListIntent
 
     data object Refresh : CastListIntent
 
     data object Retry : CastListIntent
 
     /** The row with this id became the last visible one. May trigger loading the next page. */
-    data class ItemAppeared(
-        val id: Int,
-    ) : CastListIntent
+    data class ItemAppeared(val id: Int) : CastListIntent
 
     data object RetryNextPage : CastListIntent
 }

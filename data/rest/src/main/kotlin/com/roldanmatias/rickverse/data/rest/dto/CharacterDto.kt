@@ -18,7 +18,4 @@ internal data class CharacterDto(
 )
 
 @Serializable
-internal data class LocationRefDto(
-    val name: String,
-    val url: String = "",
-)
+internal data class LocationRefDto(val name: String, val url: String = "")

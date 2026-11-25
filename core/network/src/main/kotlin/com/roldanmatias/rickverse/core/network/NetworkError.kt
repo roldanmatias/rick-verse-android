@@ -12,18 +12,11 @@ public sealed interface NetworkError {
     public data object Timeout : NetworkError
 
     /** The server answered with a non-2xx [status]. [body] is the (possibly empty) error body. */
-    public data class Http(
-        val status: Int,
-        val body: String?,
-    ) : NetworkError
+    public data class Http(val status: Int, val body: String?) : NetworkError
 
     /** The response arrived but could not be decoded. */
-    public data class Decoding(
-        val message: String?,
-    ) : NetworkError
+    public data class Decoding(val message: String?) : NetworkError
 
     /** Any other I/O or protocol failure. */
-    public data class Transport(
-        val message: String?,
-    ) : NetworkError
+    public data class Transport(val message: String?) : NetworkError
 }

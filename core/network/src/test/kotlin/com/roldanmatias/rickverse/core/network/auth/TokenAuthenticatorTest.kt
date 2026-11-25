@@ -18,9 +18,7 @@ class TokenAuthenticatorTest {
     @get:Rule
     val web = MockWebServerRule()
 
-    private class FakeTokenStore(
-        initial: String?,
-    ) : TokenStore {
+    private class FakeTokenStore(initial: String?) : TokenStore {
         @Volatile private var token = initial
 
         override suspend fun accessToken(): String? = token

@@ -33,9 +33,7 @@ public data class NetworkEvent(
  * One instance is shared by REST and GraphQL, so the in-app network log shows both APIs side by side.
  * Interceptors run on OkHttp threads, hence the lock-free `MutableStateFlow.update`.
  */
-public class NetworkLog(
-    private val maxEvents: Int = DEFAULT_MAX_EVENTS,
-) {
+public class NetworkLog(private val maxEvents: Int = DEFAULT_MAX_EVENTS) {
     private val state = MutableStateFlow<List<NetworkEvent>>(emptyList())
     private val ids = AtomicLong()
 

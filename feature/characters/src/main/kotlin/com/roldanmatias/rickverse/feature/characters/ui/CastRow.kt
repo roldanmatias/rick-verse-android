@@ -32,12 +32,12 @@ internal fun CastRow(member: CastMember, onClick: () -> Unit, modifier: Modifier
     val description = stringResource(R.string.characters_row_description, member.name, status, member.species)
     Row(
         modifier =
-            modifier
-                .fillMaxWidth()
-                .heightIn(min = 72.dp)
-                .clickable(onClick = onClick)
-                .semantics(mergeDescendants = true) { contentDescription = description }
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+        modifier
+            .fillMaxWidth()
+            .heightIn(min = 72.dp)
+            .clickable(onClick = onClick)
+            .semantics(mergeDescendants = true) { contentDescription = description }
+            .padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {

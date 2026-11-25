@@ -14,10 +14,8 @@ import okhttp3.Route
  * check lets the losers reuse the winner's token instead of refreshing again. It is the Android equivalent of a
  * Swift `actor`. Blocking with `runBlocking` is legal here: `authenticate` runs on an OkHttp worker thread.
  */
-public class TokenAuthenticator(
-    private val tokenStore: TokenStore,
-    private val refresher: TokenRefresher,
-) : Authenticator {
+public class TokenAuthenticator(private val tokenStore: TokenStore, private val refresher: TokenRefresher) :
+    Authenticator {
     private val mutex = Mutex()
 
     override fun authenticate(route: Route?, response: Response): Request? {

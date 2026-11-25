@@ -45,11 +45,11 @@ public class MetricsInterceptor(
                 timestampMillis = currentTimeMillis(),
                 source = if (isGraphQl) NetworkSource.GraphQl else NetworkSource.Rest,
                 label =
-                    if (isGraphQl) {
-                        request.header(APOLLO_OPERATION_NAME) ?: "GraphQL"
-                    } else {
-                        "${request.method} ${request.url.encodedPath}${request.url.query?.let { "?$it" }.orEmpty()}"
-                    },
+                if (isGraphQl) {
+                    request.header(APOLLO_OPERATION_NAME) ?: "GraphQL"
+                } else {
+                    "${request.method} ${request.url.encodedPath}${request.url.query?.let { "?$it" }.orEmpty()}"
+                },
                 status = status,
                 durationMs = TimeUnit.NANOSECONDS.toMillis(nanoTime() - startNanos),
                 bytes = bytes,

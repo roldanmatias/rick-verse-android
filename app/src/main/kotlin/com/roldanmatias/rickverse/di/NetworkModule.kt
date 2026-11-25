@@ -59,11 +59,11 @@ internal object NetworkModule {
             config = NetworkConfig(cache = Cache(context.cacheDir.resolve("http"), HTTP_CACHE_BYTES)),
             // Order matters: metrics wrap retry, so one event covers the whole logical call including retries.
             applicationInterceptors =
-                listOf(
-                    DefaultHeadersInterceptor(),
-                    MetricsInterceptor(networkLog),
-                    RetryInterceptor(),
-                ),
+            listOf(
+                DefaultHeadersInterceptor(),
+                MetricsInterceptor(networkLog),
+                RetryInterceptor(),
+            ),
             networkInterceptors = listOf(LoggingInterceptor(logger)),
         )
     }

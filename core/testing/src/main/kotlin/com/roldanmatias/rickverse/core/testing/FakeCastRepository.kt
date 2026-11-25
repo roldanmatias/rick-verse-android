@@ -16,10 +16,7 @@ import java.util.Collections
  * `delay()` inside one to simulate a slow response (virtual time makes that free).
  */
 public class FakeCastRepository : CastRepository {
-    public data class CastCall(
-        val page: Int,
-        val filter: CastFilter,
-    )
+    public data class CastCall(val page: Int, val filter: CastFilter)
 
     private val recordedCastCalls = Collections.synchronizedList(mutableListOf<CastCall>())
     private val recordedDetailCalls = Collections.synchronizedList(mutableListOf<Int>())

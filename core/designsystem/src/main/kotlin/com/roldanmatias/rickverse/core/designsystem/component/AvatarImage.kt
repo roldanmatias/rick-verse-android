@@ -31,9 +31,9 @@ public fun AvatarImage(
         error = ColorPainter(MaterialTheme.colorScheme.errorContainer),
         contentScale = ContentScale.Crop,
         modifier =
-            modifier.size(size).clip(
-                androidx.compose.foundation.shape
-                    .RoundedCornerShape(cornerRadius),
-            ),
+        modifier.size(size).clip(
+            androidx.compose.foundation.shape
+                .RoundedCornerShape(cornerRadius),
+        ),
     )
 }

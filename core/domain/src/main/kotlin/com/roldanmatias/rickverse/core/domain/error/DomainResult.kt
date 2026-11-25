@@ -8,14 +8,10 @@ import kotlin.coroutines.cancellation.CancellationException
  */
 public sealed interface DomainResult<out T> {
     /** The operation succeeded with [value]. */
-    public data class Success<out T>(
-        val value: T,
-    ) : DomainResult<T>
+    public data class Success<out T>(val value: T) : DomainResult<T>
 
     /** The operation failed with a domain-level [error]. */
-    public data class Failure(
-        val error: DomainError,
-    ) : DomainResult<Nothing>
+    public data class Failure(val error: DomainError) : DomainResult<Nothing>
 }
 
 /** Transforms the success value, leaving a failure untouched. */

@@ -5,9 +5,7 @@ import okhttp3.Interceptor
 import okhttp3.Response
 
 /** Adds `Authorization: Bearer <token>` when a token exists. Blocking on an OkHttp thread is fine. */
-public class BearerTokenInterceptor(
-    private val tokenStore: TokenStore,
-) : Interceptor {
+public class BearerTokenInterceptor(private val tokenStore: TokenStore) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val token = runBlocking { tokenStore.accessToken() }
         val request =

@@ -8,10 +8,7 @@ package com.roldanmatias.rickverse.core.domain.model
  *
  * @property nextPage the number of the following page, or `null` on the last page.
  */
-public data class Page<out T>(
-    val items: List<T>,
-    val nextPage: Int?,
-) {
+public data class Page<out T>(val items: List<T>, val nextPage: Int?) {
     /** `true` when another page can be requested. */
     public val hasMore: Boolean get() = nextPage != null
 

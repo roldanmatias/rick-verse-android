@@ -54,10 +54,7 @@ class SearchCastUseCaseTest {
 }
 
 @RunWith(Parameterized::class)
-class SearchCastUseCaseTrimmingTest(
-    private val input: String?,
-    private val expectedName: String?,
-) {
+class SearchCastUseCaseTrimmingTest(private val input: String?, private val expectedName: String?) {
     @Test
     fun `query is normalised before reaching the repository`() =
         runTest {

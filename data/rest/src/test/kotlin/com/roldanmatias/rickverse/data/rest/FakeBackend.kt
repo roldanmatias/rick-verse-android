@@ -18,9 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger
  * `/character/{id}`, `/episode/{id}` and the batch forms with comma-separated ids, including the single-id quirk
  * (an object instead of an array). Tracks the maximum number of requests in flight.
  */
-internal class FakeBackend(
-    private val latencyMillis: Long = 0,
-) : Dispatcher() {
+internal class FakeBackend(private val latencyMillis: Long = 0) : Dispatcher() {
     private val episodes: Map<Int, JsonObject> =
         Json
             .parseToJsonElement(Fixtures.load("episodes_1_to_51.json"))

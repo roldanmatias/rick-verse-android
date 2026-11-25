@@ -33,9 +33,9 @@ public fun Throwable.toNetworkError(): NetworkError =
             NetworkError.Http(
                 status = code(),
                 body =
-                    runCatching {
-                        response()?.errorBody()?.string()
-                    }.getOrNull(),
+                runCatching {
+                    response()?.errorBody()?.string()
+                }.getOrNull(),
             )
         }
 

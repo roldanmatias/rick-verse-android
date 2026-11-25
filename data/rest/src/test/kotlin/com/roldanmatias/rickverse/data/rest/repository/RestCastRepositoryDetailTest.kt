@@ -13,7 +13,6 @@ import com.roldanmatias.rickverse.data.rest.di.createRetrofit
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
@@ -48,20 +47,19 @@ class RestCastRepositoryDetailTest {
         }
 
     @Test
-    fun `naive detail costs 52 requests (the N+1 problem)`() =
-        runBlocking {
-            rickDetail()
+    fun `batch detail costs exactly 2 requests, not 52 (the N+1 fix)`() = runBlocking {
+        rickDetail()
 
-            assertEquals(1 + 51, web.server.requestCount)
-        }
+        assertEquals(2, web.server.requestCount)
+    }
 
     @Test
-    fun `concurrency is capped so the server is not flooded`() =
-        runBlocking {
-            rickDetail()
+    fun `the second request is one batch call for every episode id`() = runBlocking {
+        rickDetail()
 
-            assertTrue("peak was ${backend.peakConcurrency}", backend.peakConcurrency in 2..6)
-        }
+        web.server.takeRequest() // GET /character/1
+        assertEquals("/api/episode/${(1..51).joinToString(",")}", web.server.takeRequest().url.encodedPath)
+    }
 
     @Test
     fun `unknown character is NotFound`() =

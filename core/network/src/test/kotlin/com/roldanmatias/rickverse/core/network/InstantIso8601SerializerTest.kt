@@ -8,9 +8,7 @@ import java.time.Instant
 
 class InstantIso8601SerializerTest {
     @Serializable
-    private data class Holder(
-        @Serializable(with = InstantIso8601Serializer::class) val created: Instant,
-    )
+    private data class Holder(@Serializable(with = InstantIso8601Serializer::class) val created: Instant)
 
     @Test
     fun `parses fractional seconds as the API sends them`() {

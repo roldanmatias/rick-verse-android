@@ -19,17 +19,11 @@ public sealed interface DomainError {
     public data object NotFound : DomainError
 
     /** The backend failed (HTTP 5xx or a GraphQL error without data). */
-    public data class Server(
-        val statusCode: Int? = null,
-    ) : DomainError
+    public data class Server(val statusCode: Int? = null) : DomainError
 
     /** The response arrived but could not be understood (decoding or mapping failure). */
-    public data class InvalidData(
-        val detail: String? = null,
-    ) : DomainError
+    public data class InvalidData(val detail: String? = null) : DomainError
 
     /** Anything else. Always log the cause where this is created. */
-    public data class Unknown(
-        val detail: String? = null,
-    ) : DomainError
+    public data class Unknown(val detail: String? = null) : DomainError
 }
