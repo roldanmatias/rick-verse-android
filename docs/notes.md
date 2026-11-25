@@ -176,3 +176,39 @@ step and no merge conflicts in generated files. CI builds it with every `assembl
 
 **Cache keys.** `@typePolicy(keyFields: "id")` on Character, Episode and Location (`extra.graphqls`). Used by the
 normalized cache in Phase 8: the same Rick reached from a list, a detail and an episode is one record.
+
+## Phase 7: GraphQL repositories and the runtime switch
+
+**One interface for the client.** `GraphQlClient` (internal) returns data or throws `GraphQlClientError`; repositories
+never see `ApolloClient`, `ApolloResponse` or Apollo exceptions. Apollo's policies map in one function. A one-shot
+`execute()` can't emit twice, so `CacheAndNetwork` degrades to `NetworkFirst` there; Phase 8 adds the two-emission Flow.
+
+**Shared OkHttp.** Apollo is built with `.okHttpClient(sharedClient)`, so default headers, retry, metrics and logging
+apply to GraphQL as they do to REST.
+
+**Cache lib 1.0.x differs from older docs.** `normalizedCache(...)` has no default key generator: pass `typePolicies` and
+`fieldPolicies` explicitly (mirroring `extra.graphqls`), and `MemoryCacheFactory` lives in `...cache.normalized.memory`.
+Fragment classes are generated in `generated.fragment`. `ApolloParseException` is deprecated (JSON problems are
+`JsonDataException`/`JsonEncodingException`).
+
+**REST vs GraphQL behavioural differences (absorbed in the data layer):**
+| | REST | GraphQL |
+|---|---|---|
+| Empty search | HTTP 404 | 200 with `results: []` |
+| Missing item | HTTP 404 | 200 with `character: null` |
+| Failure with 200 | n/a | `errors` in the body, maybe partial `data` |
+| Pagination | `info.next` is a URL (parse the page) | `info.next` is an `Int?` |
+| Detail + episodes | 2 requests (batch) | 1 request |
+
+**Why tests use a real ApolloClient + MockWebServer** (not a fake `GraphQlClient`): it exercises codegen adapters,
+variables serialization (`Optional.presentIfNotNull`), HTTP errors and a dead server end to end, and it proves the
+normalized cache (`CacheFirst` second call = 0 requests).
+
+**DataStore.** One `DataStore<Preferences>` per file per process (singleton). Enums stored by name with a default fallback.
+Tests inject a store on a temp file with `backgroundScope`.
+
+**Switching.** `SwitchingCastRepository` reads the source at call time. See ADR 0004 and ADR 0009 for the UI reset and
+the ViewModel-scoping subtlety (`key()` alone does not clear ViewModels).
+
+**Not verified here:** the reset-on-switch flow was not exercised on a device (no emulator); the pieces are unit tested
+but the `LocalViewModelStoreOwner` override is the riskiest part to confirm manually.

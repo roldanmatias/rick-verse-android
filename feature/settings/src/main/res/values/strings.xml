@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_title">Settings</string>
+    <string name="settings_data_source">Data source</string>
+    <string name="settings_data_source_rest">REST</string>
+    <string name="settings_data_source_graphql">GraphQL</string>
+    <string name="settings_data_source_hint">Switching resets the app to its first screen.</string>
+    <string name="settings_cache_policy">GraphQL cache policy</string>
+    <string name="settings_cache_cache_first">Cache first</string>
+    <string name="settings_cache_network_first">Network first</string>
+    <string name="settings_cache_network_only">Network only</string>
+    <string name="settings_cache_cache_and_network">Cache and network</string>
+</resources>

@@ -31,6 +31,7 @@ import com.roldanmatias.rickverse.feature.characters.ui.CastDetailRoute
 import com.roldanmatias.rickverse.feature.characters.ui.CastListRoute
 import com.roldanmatias.rickverse.feature.episodes.ui.EpisodeDetailRoute
 import com.roldanmatias.rickverse.feature.episodes.ui.EpisodeListRoute
+import com.roldanmatias.rickverse.feature.settings.ui.SettingsRoute
 import kotlin.reflect.KClass
 
 private enum class Tab(
@@ -114,7 +115,7 @@ internal fun RootNavigation(modifier: Modifier = Modifier) {
                 }
             }
             navigation<Route.SettingsGraph>(startDestination = Route.Settings) {
-                composable<Route.Settings> { PlaceholderScreen() }
+                composable<Route.Settings> { SettingsRoute() }
             }
         }
     }

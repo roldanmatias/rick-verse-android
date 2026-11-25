@@ -20,7 +20,9 @@ dependencies {
     implementation(projects.core.network)
     implementation(projects.core.designsystem)
     implementation(projects.core.ui)
+    implementation(projects.core.preferences)
     implementation(projects.data.rest)
+    implementation(projects.data.graphql)
     implementation(projects.feature.characters)
     implementation(projects.feature.episodes)
     implementation(projects.feature.settings)
@@ -35,6 +37,8 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
+
+    testImplementation(projects.core.testing)
 
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.espresso.core)
