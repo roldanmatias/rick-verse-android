@@ -1,0 +1,5 @@
+# Every change needs a review from the owner. Split per module when the team grows (core/domain, data/*, feature/*).
+*                    @roldanmatias
+/.github/            @roldanmatias
+/build-logic/        @roldanmatias
+/core/domain/        @roldanmatias

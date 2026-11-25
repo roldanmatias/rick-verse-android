@@ -36,4 +36,6 @@ Compose compiler reports: `./gradlew assembleRelease -Prickverse.composeMetrics=
 | `rickverse.hilt` | Hilt + KSP |
 | `rickverse.quality` | detekt, Spotless (ktlint), Kover |
 
+CI: [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs wrapper validation, build, tests, the coverage gate, Android Lint and dependency review on every PR.
+
 Requires a JDK 21+ to run Gradle (Android Studio's bundled JDK works); bytecode targets Java 17.
