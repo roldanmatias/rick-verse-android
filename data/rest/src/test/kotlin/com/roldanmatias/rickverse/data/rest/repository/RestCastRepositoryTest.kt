@@ -10,6 +10,7 @@ import com.roldanmatias.rickverse.core.testing.Fixtures
 import com.roldanmatias.rickverse.core.testing.MockWebServerRule
 import com.roldanmatias.rickverse.core.testing.TestDispatcherProvider
 import com.roldanmatias.rickverse.data.rest.api.CharacterApi
+import com.roldanmatias.rickverse.data.rest.api.EpisodeApi
 import com.roldanmatias.rickverse.data.rest.di.createRetrofit
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancelAndJoin
@@ -29,7 +30,11 @@ class RestCastRepositoryTest {
     private val repository by lazy {
         val retrofit =
             createRetrofit(web.baseUrl("/api/").toString(), OkHttpClientFactory.create(), NetworkJson.default)
-        RestCastRepository(retrofit.create(CharacterApi::class.java), TestDispatcherProvider(Dispatchers.IO))
+        RestCastRepository(
+            retrofit.create(CharacterApi::class.java),
+            retrofit.create(EpisodeApi::class.java),
+            TestDispatcherProvider(Dispatchers.IO),
+        )
     }
 
     @Test
