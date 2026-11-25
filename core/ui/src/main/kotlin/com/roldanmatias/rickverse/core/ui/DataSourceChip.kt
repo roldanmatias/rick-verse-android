@@ -1,9 +1,13 @@
 package com.roldanmatias.rickverse.core.ui
 
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ProvidableCompositionLocal
@@ -26,11 +30,19 @@ public val LocalDataSourceLabel: ProvidableCompositionLocal<String?> = staticCom
 public fun RickVerseTopBar(
     title: String,
     modifier: Modifier = Modifier,
+    onBack: (() -> Unit)? = null,
     actions: @Composable () -> Unit = {},
 ) {
     CenterAlignedTopAppBar(
         title = { Text(title) },
         modifier = modifier,
+        navigationIcon = {
+            if (onBack != null) {
+                IconButton(onClick = onBack) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.action_back))
+                }
+            }
+        },
         actions = {
             actions()
             LocalDataSourceLabel.current?.let { label ->

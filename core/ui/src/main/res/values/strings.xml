@@ -6,6 +6,7 @@
     <string name="error_server">The server had a problem. Please try again in a moment.</string>
     <string name="error_invalid_data">We received data we couldn\'t understand.</string>
     <string name="error_unknown">Something went wrong. Please try again.</string>
+    <string name="action_back">Back</string>
     <string name="action_retry">Retry</string>
     <string name="pagination_failed">Couldn\'t load more</string>
     <string name="pagination_loading">Loading more</string>

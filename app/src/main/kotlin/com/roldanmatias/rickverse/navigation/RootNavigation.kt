@@ -25,8 +25,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navDeepLink
 import com.roldanmatias.rickverse.R
+import com.roldanmatias.rickverse.feature.characters.ui.CastDetailRoute
 import com.roldanmatias.rickverse.feature.characters.ui.CastListRoute
+import com.roldanmatias.rickverse.feature.episodes.ui.EpisodeDetailRoute
+import com.roldanmatias.rickverse.feature.episodes.ui.EpisodeListRoute
 import kotlin.reflect.KClass
 
 private enum class Tab(
@@ -85,12 +89,29 @@ internal fun RootNavigation(modifier: Modifier = Modifier) {
         NavHost(navController = navController, startDestination = Route.CharactersGraph) {
             navigation<Route.CharactersGraph>(startDestination = Route.CastList) {
                 composable<Route.CastList> {
-                    // Navigation to detail arrives with the detail screen (Phase 5).
-                    CastListRoute(onCastClick = { })
+                    CastListRoute(onCastClick = { navController.navigate(Route.CastDetail(it)) })
+                }
+                composable<Route.CastDetail>(
+                    deepLinks = listOf(navDeepLink<Route.CastDetail>(basePath = "rickverse://character")),
+                ) {
+                    CastDetailRoute(
+                        onBack = navController::navigateUp,
+                        onEpisodeClick = { navController.navigate(Route.EpisodeDetail(it)) },
+                    )
                 }
             }
             navigation<Route.EpisodesGraph>(startDestination = Route.EpisodeList) {
-                composable<Route.EpisodeList> { PlaceholderScreen() }
+                composable<Route.EpisodeList> {
+                    EpisodeListRoute(onEpisodeClick = { navController.navigate(Route.EpisodeDetail(it)) })
+                }
+                composable<Route.EpisodeDetail>(
+                    deepLinks = listOf(navDeepLink<Route.EpisodeDetail>(basePath = "rickverse://episode")),
+                ) {
+                    EpisodeDetailRoute(
+                        onBack = navController::navigateUp,
+                        onCastClick = { navController.navigate(Route.CastDetail(it)) },
+                    )
+                }
             }
             navigation<Route.SettingsGraph>(startDestination = Route.Settings) {
                 composable<Route.Settings> { PlaceholderScreen() }

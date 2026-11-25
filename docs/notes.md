@@ -126,3 +126,24 @@ navigation-compose one is deprecated (and warnings are errors here). `createComp
 deprecated in Compose UI 1.13 in favour of `androidx.compose.ui.test.v2.runComposeUiTest`.
 
 **Not verified here:** the app was built and unit-tested but not launched, because this machine has no emulator or device.
+
+## Phase 5: Detail, episodes and the N+1 problem
+
+**N+1.** Rick appears in 51 episodes. The API's character payload only lists episode *URLs*, so the naive approach is
+1 + 51 = **52 requests**. Version A (git: `feat(rest): character detail with concurrent episode fetching`) ran them with
+`async`/`awaitAll` behind a `Semaphore(6)`: faster, but still 52 requests and still hammering the server.
+Version B (`perf(rest): use batch endpoint to fix N+1`) uses `GET /episode/1,2,...,51`: **2 requests**, independent of
+episode count. Tests assert the exact request count (`web.server.requestCount == 2`) against real captured fixtures.
+
+**Why keep concurrency in mind anyway.** When there is no batch endpoint, bound the fan-out (Semaphore) and make it
+structured (`coroutineScope`) so one failure cancels the siblings. `awaitAll` preserves input order.
+
+**API quirk.** A batch call with a single id returns an object, not an array. `OneOrMany` absorbs that in the DTO layer.
+
+**Navigation.** Typed `@Serializable` routes; arguments land in `SavedStateHandle` under the property name, so the
+ViewModel reads `savedStateHandle["id"]` without depending on `:app`'s route class (features never depend on `:app`).
+Cross-links (episode -> character) navigate to the other tab's graph. Deep links `rickverse://character/{id}` and
+`rickverse://episode/{id}` are declared in both the manifest and the nav graph. Predictive back is enabled with
+`android:enableOnBackInvokedCallback`.
+
+**Not verified here:** no emulator, so deep links and predictive back are configured but not exercised on a device.

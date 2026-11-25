@@ -15,4 +15,8 @@
     <string name="characters_row_description">%1$s, %2$s, %3$s</string>
     <string name="characters_avatar_description">Portrait of %1$s</string>
     <string name="characters_refresh_failed">Couldn\'t refresh the list</string>
+    <string name="detail_title">Character</string>
+    <string name="detail_episodes">Episodes (%1$d)</string>
+    <string name="detail_origin">Origin: %1$s</string>
+    <string name="detail_location">Last seen: %1$s</string>
 </resources>
