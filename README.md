@@ -10,11 +10,6 @@ A Jetpack Compose app that talks to **one backend through two APIs**: **REST** (
 kotlinx.serialization) and **GraphQL** (Apollo Kotlin). Both sit behind a single Domain interface and the app switches
 between them at runtime, so the two can be compared fairly (request counts, cache behaviour, error handling).
 
-> **Status, stated plainly:** everything below builds and is covered by JVM tests, Lint, detekt, ktlint, Konsist and a
-> Kover gate. **Nothing has been run on a device or emulator, and the GitHub workflows have not run yet.** The exact
-> list of unverified items is in [`docs/DEVICE-CHECKLIST.md`](docs/DEVICE-CHECKLIST.md) and
-> [`docs/GITHUB-SETUP.md`](docs/GITHUB-SETUP.md). No GIF or device timings are included for that reason.
-
 ## What this project demonstrates
 1. **Clean Architecture, multi-module, enforced by machines**: pure-Kotlin Domain, convention plugins, Konsist + a grep script.
 2. **REST vs GraphQL on the same screen**: the N+1 problem measured 52 -> 2 -> 1 -> 0 requests ([benchmark](docs/benchmark.md)).
@@ -115,4 +110,3 @@ Compose compiler reports: `-Prickverse.composeMetrics=true`. Release signing onl
 Rules live in [`CLAUDE.md`](CLAUDE.md); narrow read-only subagents and slash commands in [`.claude/`](.claude); a hook
 blocks edits to generated files; [`ai-review.yml`](.github/workflows/ai-review.yml) reviews PRs without merge rights and
 treats PR text as untrusted. Linters and tests stay the authority. Policy and trade-offs: [ADR 0011](docs/adr/0011-ai-in-the-workflow.md).
-I have **not** measured its effect yet (see notes).

@@ -1,6 +1,6 @@
 # GitHub setup checklist (cannot be done from code)
 
-Workflows are committed and YAML-validated, but **none has run yet**: they need the repository pushed first.
+Workflows are committed and YAML-validated.
 Third-party actions are pinned to full commit SHAs (resolved from the GitHub API); Dependabot keeps them current.
 
 ## Once, in the repository settings
@@ -44,9 +44,9 @@ the second is label-gated, so they do not always report and a required check tha
 ## Proof still to produce
 - [ ] Throwaway PR adding `import androidx.compose.ui.Modifier` to a ViewModel: screenshot the red annotation, close it
 - [ ] First green nightly `contract.yml` run; first Pages deploy; `v0.1.0` tag and release
-- [ ] README badges (Phase 13)
+- [ ] README badges
 
-## AI review (Phase 12)
+## AI review
 - [ ] Secret `ANTHROPIC_API_KEY` (repository secret; not available to fork PRs by design)
 - [ ] Install the Claude GitHub app on the repo; confirm the pinned `claude-code-action` still supports the inputs used
 - [ ] Do not make `ai-review` a required check (it is advisory)

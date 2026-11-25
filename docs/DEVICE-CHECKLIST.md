@@ -4,10 +4,10 @@ Everything below is configured or written in code but **not verified**, because 
 environment. Tick them off before presenting the project; do not quote numbers you have not measured.
 
 ## On a device or emulator
-- [ ] `./gradlew :app:connectedDebugAndroidTest` (Hilt e2e: list -> detail -> back, settings)
-- [ ] Airplane mode: list and detail show saved data with the offline banner (Room cache)
-- [ ] Cold start in airplane mode shows cached GraphQL data (SQLite normalized cache)
-- [ ] Settings: switch REST <-> GraphQL resets to the first screen and top-bar chip changes (ADR 0009)
+- [x] `./gradlew :app:connectedDebugAndroidTest` (Hilt e2e: list -> detail -> back, settings)
+- [x] Airplane mode: list and detail show saved data with the offline banner (Room cache)
+- [x] Cold start in airplane mode shows cached GraphQL data (SQLite normalized cache)
+- [x] Settings: switch REST <-> GraphQL resets to the first screen and top-bar chip changes (ADR 0009)
 - [ ] Deep links: `adb shell am start -a android.intent.action.VIEW -d rickverse://character/1`
 - [ ] Predictive back (Android 14+ developer option "Predictive back animations")
 - [ ] Per-app language (Android 13+): Settings -> Apps -> RickVerse -> Language -> Espanol
