@@ -1,0 +1,64 @@
+# detekt 2.x. Layered on top of detekt's defaults (buildUponDefaultConfig). Only deviations are listed.
+style:
+  MaxLineLength:
+    maxLineLength: 120
+  MagicNumber:
+    ignorePropertyDeclaration: true
+    ignoreCompanionObjectPropertyDeclaration: true
+    ignoreAnnotation: true
+    ignoreNamedArgument: true
+    ignoreExtensionFunctions: true
+    excludes: ['**/test/**', '**/androidTest/**', '**/ui/theme/**']
+  ReturnCount:
+    max: 3
+  ForbiddenComment:
+    active: true
+    comments:
+      - value: 'FIXME:'
+      - value: 'STOPSHIP:'
+  WildcardImport:
+    active: true
+
+potential-bugs:
+  # `!!` is banned outside tests (guide: final checklist).
+  UnsafeCallOnNullableType:
+    active: true
+    excludes: ['**/test/**', '**/androidTest/**']
+
+complexity:
+  LongParameterList:
+    ignoreDefaultParameters: true
+  TooManyFunctions:
+    allowedFunctionsPerFile: 20
+    allowedFunctionsPerClass: 20
+    ignoreOverridden: true
+  LongMethod:
+    allowedLines: 80
+    excludes: ['**/test/**', '**/androidTest/**']
+
+naming:
+  FunctionNaming:
+    # Composables are PascalCase; test names may use backticks.
+    ignoreAnnotated: ['Composable']
+    excludes: ['**/test/**', '**/androidTest/**']
+  TopLevelPropertyNaming:
+    constantPattern: '[A-Z][A-Za-z0-9_]*'
+
+exceptions:
+  # Guide rule: never swallow CancellationException. Catching generic exceptions is flagged unless it is
+  # explicitly suppressed with a justification (e.g. runCatchingDomain, which rethrows cancellation).
+  TooGenericExceptionCaught:
+    active: true
+    excludes: ['**/test/**', '**/androidTest/**']
+  SwallowedException:
+    active: true
+    excludes: ['**/test/**', '**/androidTest/**']
+
+coroutines:
+  GlobalCoroutineUsage:
+    active: true
+  InjectDispatcher:
+    active: true
+    excludes: ['**/test/**', '**/androidTest/**']
+  SuspendFunSwallowedCancellation:
+    active: true
