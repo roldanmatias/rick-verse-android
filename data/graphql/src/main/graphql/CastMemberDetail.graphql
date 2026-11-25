@@ -1,0 +1,18 @@
+# One request for what REST needs 2 (batch) or 52 (naive) requests to assemble.
+query CastMemberDetail($id: ID!) {
+  character(id: $id) {
+    ...CastMemberBasic
+    gender
+    origin {
+      id
+      name
+    }
+    location {
+      id
+      name
+    }
+    episode {
+      ...EpisodeBasic
+    }
+  }
+}

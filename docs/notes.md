@@ -147,3 +147,32 @@ Cross-links (episode -> character) navigate to the other tab's graph. Deep links
 `android:enableOnBackInvokedCallback`.
 
 **Not verified here:** no emulator, so deep links and predictive back are configured but not exercised on a device.
+
+## Phase 6: GraphQL and Apollo Kotlin setup
+
+**Headline.** Character detail is **1 request** in GraphQL (nested `episode { ...EpisodeBasic }`), versus 52 (naive REST)
+and 2 (REST batch). The client chooses the shape, so no over-fetching (the list asks for 5 fields, not 12) and no N+1 on
+the client. The N+1 moves to the server (resolvers per nested field), which is why public APIs add depth and cost limits:
+this one rejects deep queries (`GCDN_QUERY_DEPTH_LIMIT`, HTTP 413), which I hit while exploring.
+
+**Honest limitations of this API.** Read-only: no mutations, no subscriptions. Theory only: input types, optimistic
+responses, cache updates after a write, subscriptions over WebSocket. Every field in the schema is nullable
+(`id: ID`, `name: String`), so mappers must treat missing data as `InvalidData`, not crash.
+
+**HTTP 200 is not success.** GraphQL returns errors in the body (`errors`, possibly with partial `data`). The repository
+(Phase 7) must check `response.errors` and `exception`, not just the status code.
+
+**Apollo Kotlin 5.2 differences from older docs** (the guide warned about this):
+* `visibility.set("internal")` no longer exists: it is `generateAsInternal.set(true)`.
+* `warnOnDeprecatedUsages` is deprecated in favour of `issueSeverity`.
+* `./gradlew downloadApolloSchema --endpoint ...` is gone. Declare `introspection { endpointUrl; schemaFile }` in the
+  service and run `downloadRickandmortyApolloSchemaFromIntrospection`.
+* Parsing a response in a test: `Operation.parseResponse(JsonReader)` with `Buffer().writeUtf8(json).jsonReader()`.
+* Apollo adds `__typename` to every selection set, so hand-captured fixtures must request it too, otherwise parsing
+  fails with `NullOrMissingField`.
+
+**Generated code is not committed.** Unlike iOS, Apollo writes to `build/`, so there is no "regenerate and commit"
+step and no merge conflicts in generated files. CI builds it with every `assembleDebug`.
+
+**Cache keys.** `@typePolicy(keyFields: "id")` on Character, Episode and Location (`extra.graphqls`). Used by the
+normalized cache in Phase 8: the same Rick reached from a list, a detail and an episode is one record.

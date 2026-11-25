@@ -1,0 +1,10 @@
+query CastPage($page: Int, $name: String, $status: String) {
+  characters(page: $page, filter: { name: $name, status: $status }) {
+    info {
+      next
+    }
+    results {
+      ...CastMemberBasic
+    }
+  }
+}

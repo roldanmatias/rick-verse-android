@@ -1,0 +1,5 @@
+# Normalized-cache identity. Without these, every query would cache its own copy of "Rick": with them, the
+# same Character reached from the list, the detail and an episode is ONE record, so an update shows everywhere.
+extend type Character @typePolicy(keyFields: "id")
+extend type Episode @typePolicy(keyFields: "id")
+extend type Location @typePolicy(keyFields: "id")

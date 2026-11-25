@@ -1,0 +1,10 @@
+query EpisodePage($page: Int) {
+  episodes(page: $page) {
+    info {
+      next
+    }
+    results {
+      ...EpisodeBasic
+    }
+  }
+}

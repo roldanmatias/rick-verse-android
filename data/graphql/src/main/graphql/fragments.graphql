@@ -1,0 +1,14 @@
+fragment CastMemberBasic on Character {
+  id
+  name
+  status
+  species
+  image
+}
+
+fragment EpisodeBasic on Episode {
+  id
+  name
+  episode
+  air_date
+}
