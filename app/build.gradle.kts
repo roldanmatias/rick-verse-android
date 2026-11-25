@@ -13,9 +13,23 @@ android {
     }
     defaultConfig {
         applicationId = "com.roldanmatias.rickverse"
-        versionCode = 1
-        versionName = "0.1.0"
+        // CI release job passes these (version from the tag, code from the run number); local builds default.
+        versionCode = providers.environmentVariable("VERSION_CODE").map(String::toInt).orElse(1).get()
+        versionName = providers.environmentVariable("VERSION_NAME").orElse("0.1.0").get()
         testInstrumentationRunner = "com.roldanmatias.rickverse.HiltTestRunner"
+    }
+
+    // Signing exists only when the release workflow provides the keystore (decoded from an environment secret).
+    // Passwords come from environment variables: never from files in the repo, never echoed to logs.
+    val keystorePath = providers.environmentVariable("KEYSTORE_PATH").orNull
+    if (keystorePath != null) {
+        signingConfigs.create("release").apply {
+            storeFile = file(keystorePath)
+            storePassword = providers.environmentVariable("KEYSTORE_PASSWORD").get()
+            keyAlias = providers.environmentVariable("KEY_ALIAS").get()
+            keyPassword = providers.environmentVariable("KEY_PASSWORD").get()
+        }
+        buildTypes.getByName("release").signingConfig = signingConfigs.getByName("release")
     }
 }
 

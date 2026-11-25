@@ -1,0 +1,32 @@
+version: 2
+updates:
+  - package-ecosystem: gradle
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    labels: [dependencies]
+    groups:
+      # Coupled versions: the Kotlin compiler, KSP, the Compose compiler plugin and Hilt must move together.
+      # Merging one without the others breaks the build ("KSP version X is not compatible with Kotlin Y").
+      kotlin-toolchain:
+        patterns: ["org.jetbrains.kotlin*", "com.google.devtools.ksp*", "com.google.dagger*", "androidx.hilt*"]
+      compose:
+        patterns: ["androidx.compose*"]
+      androidx:
+        patterns: ["androidx.*"]
+        exclude-patterns: ["androidx.compose*", "androidx.hilt*"]
+      apollo:
+        patterns: ["com.apollographql*"]
+      networking:
+        patterns: ["com.squareup*", "org.jetbrains.kotlinx:kotlinx-serialization*"]
+      quality-tooling:
+        patterns: ["dev.detekt*", "com.diffplug*", "org.jetbrains.kotlinx.kover*", "com.lemonappdev*", "org.jetbrains.dokka*"]
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    labels: [dependencies, ci]
+    groups:
+      actions:
+        patterns: ["*"]

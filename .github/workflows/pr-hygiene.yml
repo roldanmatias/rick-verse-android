@@ -1,0 +1,61 @@
+name: PR hygiene
+
+# SECURITY: pull_request_target runs with a write token. It must NEVER check out or execute code from the pull
+# request. Both jobs below only read the PR title / changed file names through the GitHub API.
+on:
+  pull_request_target:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  contents: read
+
+jobs:
+  # Required check name: `PR title`
+  pr-title:
+    name: PR title
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      pull-requests: read
+    steps:
+      - uses: amannn/action-semantic-pull-request@66e72920af32222769c386d81f89656ebcb6d6d5 # v6.1.4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          types: |
+            feat
+            fix
+            perf
+            refactor
+            docs
+            test
+            build
+            ci
+            chore
+            revert
+          scopes: |
+            domain
+            network
+            rest
+            graphql
+            local
+            features
+            app
+            ui
+            ci
+            docs
+            deps
+          requireScope: false
+
+  label:
+    name: label
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      # Config is read from the base branch (not the PR), another reason this job is safe under pull_request_target.
+      - uses: actions/labeler@bf12e9b00b37c5c0ca2b87b79b2daf7891dbda13 # v7.0.0
+        with:
+          sync-labels: true

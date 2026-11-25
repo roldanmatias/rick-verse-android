@@ -304,3 +304,18 @@ below 13 would need AppCompat's locale APIs, not added). Lint's `PluralsCandidat
 **Security basics.** `networkSecurityConfig` forbids cleartext; `allowBackup=false` with explicit extraction rules;
 logging interceptor is debug-only and never logs bodies; no secrets exist in this repo (pattern for future ones:
 `local.properties`/CI secrets into `BuildConfig`, never committed).
+
+## Phase 11: CI/CD
+
+Written and YAML-validated only: **no workflow has executed**, as the repo is not pushed. See `docs/GITHUB-SETUP.md`.
+
+* Tiers: hermetic PR checks (fakes, fixtures, MockWebServer) vs nightly live-API checks. A third-party outage can never
+  redden a PR.
+* `pull_request_target` is used only for title/label jobs and never checks out PR code (write token + untrusted code is the
+  classic Actions takeover).
+* Path-filtered or label-gated workflows are not required checks, otherwise PRs wait forever.
+* Release signing is wired through environment variables in `app/build.gradle.kts`, only when `KEYSTORE_PATH` exists, so
+  local and PR builds never need a keystore. Version name comes from the tag, version code from the run number.
+* Dokka is applied via the quality convention plugin and aggregated at the root (`dokkaGeneratePublicationHtml`, verified locally).
+* The Apollo schema download is deterministic (re-running it produced no diff), which is what makes the drift check trustworthy.
+* The Play upload step is a deliberate placeholder (fails) rather than a pretend integration.

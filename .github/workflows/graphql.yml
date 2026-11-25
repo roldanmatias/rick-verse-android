@@ -1,0 +1,31 @@
+name: GraphQL
+
+# Path-filtered on purpose, so it must NOT be a required check: a required check that never runs (no matching paths)
+# would block the pull request forever.
+on:
+  pull_request:
+    paths:
+      - "**/*.graphql"
+      - "**/*.graphqls"
+      - "data/graphql/**"
+      - "gradle/libs.versions.toml"
+
+concurrency:
+  group: graphql-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  codegen:
+    name: codegen and mapping tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/setup-android
+      # Apollo generates code into build/, so there is no "stale generated code" to diff. Instead, an operation that
+      # no longer matches the committed schema fails here, at codegen time. The tests then parse real fixtures.
+      - name: Generate Apollo sources and run the module's tests
+        run: ./gradlew :data:graphql:generateApolloSources :data:graphql:testDebugUnitTest --configuration-cache --console=plain

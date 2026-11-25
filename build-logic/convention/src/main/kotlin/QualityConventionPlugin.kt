@@ -12,6 +12,7 @@ class QualityConventionPlugin : Plugin<Project> {
         pluginManager.apply("dev.detekt")
         pluginManager.apply("com.diffplug.spotless")
         pluginManager.apply("org.jetbrains.kotlinx.kover")
+        pluginManager.apply("org.jetbrains.dokka") // documents public APIs; aggregated at the root
 
         extensions.configure<DetektExtension> {
             buildUponDefaultConfig.set(true)

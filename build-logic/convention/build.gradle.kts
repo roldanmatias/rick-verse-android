@@ -27,6 +27,7 @@ dependencies {
     compileOnly(libs.detekt.gradlePlugin)
     compileOnly(libs.spotless.gradlePlugin)
     compileOnly(libs.kover.gradlePlugin)
+    compileOnly(libs.dokka.gradlePlugin)
 }
 
 gradlePlugin {

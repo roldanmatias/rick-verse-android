@@ -1,0 +1,66 @@
+name: Lint
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: lint-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # Required check: `lint`
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      security-events: write # upload SARIF so detekt findings show as code-scanning annotations
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/setup-android
+      - name: detekt, Spotless (ktlint), Android Lint
+        run: ./gradlew detekt spotlessCheck lint --continue --configuration-cache --console=plain
+      - name: Collect detekt SARIF
+        if: always()
+        run: |
+          mkdir -p sarif
+          find . -path '*/build/reports/detekt/detekt.sarif' -not -path './sarif/*' | while read -r f; do
+            cp "$f" "sarif/$(echo "$f" | tr '/.' '__').sarif"
+          done
+          ls sarif || true
+      # Fork PRs get a read-only token: uploading would fail, so skip it there.
+      - name: Upload detekt findings to code scanning
+        if: always() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+        uses: github/codeql-action/upload-sarif@915412ff23e8b7659517e607487dbeae018f2934 # v4.39.5
+        with:
+          sarif_file: sarif
+          category: detekt
+        continue-on-error: true
+      - name: Upload reports
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: lint-reports
+          path: |
+            **/build/reports/detekt/
+            **/build/reports/lint-results-*.html
+          retention-days: 7
+
+  # Required check: `architecture`. Fast grep guard first (no Gradle), then the Konsist rules.
+  architecture:
+    name: architecture
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Layer rules (grep, with inline annotations)
+        run: scripts/check-architecture.sh
+      - uses: ./.github/actions/setup-android
+      - name: Konsist architecture tests
+        run: ./gradlew :architecture-tests:test --configuration-cache --console=plain

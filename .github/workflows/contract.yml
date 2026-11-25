@@ -1,0 +1,82 @@
+name: Contract (live API)
+
+# Nightly, never on pull requests: PR checks are hermetic (fakes, fixtures, MockWebServer), so a third-party outage
+# cannot make them flaky. This job is where "the backend changed under us" gets noticed.
+on:
+  schedule:
+    - cron: "30 2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    name: contract tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/setup-android
+      - name: Live REST and GraphQL contract tests
+        run: ./gradlew :contract-tests:contractTest --console=plain
+      - name: Upload reports
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: contract-reports
+          path: contract-tests/build/reports/tests/
+          retention-days: 14
+
+  schema-drift:
+    name: GraphQL schema drift
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/setup-android
+      - name: Re-download the schema from the live API
+        run: ./gradlew :data:graphql:downloadRickandmortyApolloSchemaFromIntrospection --console=plain
+      - name: Diff against the committed schema
+        id: diff
+        run: |
+          if git diff --quiet -- data/graphql/src/main/graphql/schema.graphqls; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            git diff -- data/graphql/src/main/graphql/schema.graphqls > schema.diff
+            {
+              echo "### GraphQL schema drift"
+              echo '```diff'
+              head -c 60000 schema.diff
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+      # One issue at a time: skip if a drift issue is already open.
+      - name: Open a schema-drift issue
+        if: steps.diff.outputs.changed == 'true'
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const fs = require('fs');
+            const { owner, repo } = context.repo;
+            const open = await github.rest.issues.listForRepo({ owner, repo, state: 'open', labels: 'schema-drift' });
+            if (open.data.length > 0) {
+              core.info(`Drift issue #${open.data[0].number} is already open.`);
+              return;
+            }
+            const diff = fs.readFileSync('schema.diff', 'utf8').slice(0, 50000);
+            await github.rest.issues.create({
+              owner, repo,
+              title: 'GraphQL schema drift detected',
+              labels: ['schema-drift', 'graphql'],
+              body: 'The live schema differs from `data/graphql/src/main/graphql/schema.graphqls`.\n\n'
+                + 'Run `./gradlew :data:graphql:downloadRickandmortyApolloSchemaFromIntrospection`, review the diff, '
+                + 'fix operations/mappers if needed, and commit.\n\n```diff\n' + diff + '\n```\n',
+            });
+      - name: Fail the run so GitHub emails the owner
+        if: steps.diff.outputs.changed == 'true'
+        run: exit 1

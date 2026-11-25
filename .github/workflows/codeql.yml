@@ -1,0 +1,45 @@
+name: CodeQL
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "17 4 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    name: analyze (${{ matrix.language }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Kotlin is analysed through the java-kotlin extractor, which needs a real build.
+          # Check GitHub's CodeQL docs for the Kotlin version it currently supports: a newer compiler can lag behind.
+          - language: java-kotlin
+            build-mode: manual
+          # The workflows themselves: script injection, over-broad permissions, unpinned actions.
+          - language: actions
+            build-mode: none
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/setup-android
+        if: matrix.language == 'java-kotlin'
+      - uses: github/codeql-action/init@915412ff23e8b7659517e607487dbeae018f2934 # v4.39.5
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: ${{ matrix.build-mode }}
+      - name: Build (Kotlin only)
+        if: matrix.language == 'java-kotlin'
+        run: ./gradlew assembleDebug --no-daemon --console=plain
+      - uses: github/codeql-action/analyze@915412ff23e8b7659517e607487dbeae018f2934 # v4.39.5
+        with:
+          category: /language:${{ matrix.language }}

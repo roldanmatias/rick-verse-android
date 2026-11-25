@@ -1,0 +1,31 @@
+# Module labels (used by .github/release.yml to group release notes by layer).
+domain:
+  - changed-files:
+      - any-glob-to-any-file: ["core/domain/**", "core/common/**"]
+network:
+  - changed-files:
+      - any-glob-to-any-file: ["core/network/**"]
+rest:
+  - changed-files:
+      - any-glob-to-any-file: ["data/rest/**"]
+graphql:
+  - changed-files:
+      - any-glob-to-any-file: ["data/graphql/**"]
+local:
+  - changed-files:
+      - any-glob-to-any-file: ["data/local/**", "core/preferences/**"]
+features:
+  - changed-files:
+      - any-glob-to-any-file: ["feature/**", "core/ui/**", "core/designsystem/**"]
+app:
+  - changed-files:
+      - any-glob-to-any-file: ["app/**", "benchmark/**"]
+ci:
+  - changed-files:
+      - any-glob-to-any-file: [".github/**", "scripts/**", "build-logic/**", "gradle/**", "config/**"]
+docs:
+  - changed-files:
+      - any-glob-to-any-file: ["docs/**", "**/*.md"]
+dependencies:
+  - changed-files:
+      - any-glob-to-any-file: ["gradle/libs.versions.toml"]

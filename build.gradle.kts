@@ -16,12 +16,22 @@ plugins {
     alias(libs.plugins.detekt) apply false
     alias(libs.plugins.spotless) apply false
     alias(libs.plugins.kover)
+    alias(libs.plugins.dokka)
 }
 
 dependencies {
     // Aggregate coverage from every module that applies the convention plugins.
     // :benchmark is a com.android.test module (no Kover): it measures the app, it is not measured.
     subprojects.filter { it.buildFile.exists() && it.path != ":benchmark" }.forEach { kover(it) }
+    // Dokka documents production modules only (not test-only modules or the test fixtures).
+    val notDocumented = setOf(":benchmark", ":architecture-tests", ":contract-tests", ":core:testing")
+    subprojects
+        .filter { it.buildFile.exists() && it.path !in notDocumented && it.path != ":app" }
+        .forEach { dokka(it) }
+}
+
+dokka {
+    moduleName.set("RickVerse")
 }
 
 kover {

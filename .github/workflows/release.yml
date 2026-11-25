@@ -1,0 +1,63 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*.*.*"]
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/setup-android
+      - run: ./gradlew test koverVerify --configuration-cache --console=plain
+
+  release:
+    name: signed release
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # Secrets live in a GitHub Environment so they can require a reviewer before they are exposed.
+    environment: release
+    permissions:
+      contents: write # create the GitHub Release
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/setup-android
+      - name: Decode keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ]; then echo "::error::KEYSTORE_BASE64 secret is not set in the 'release' environment"; exit 1; fi
+          echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
+          echo "KEYSTORE_PATH=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
+      - name: Build signed APK and AAB
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          VERSION_CODE: ${{ github.run_number }}
+        run: |
+          export VERSION_NAME="${GITHUB_REF_NAME#v}"
+          ./gradlew :app:assembleRelease :app:bundleRelease --console=plain
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --title "$GITHUB_REF_NAME" \
+            --generate-notes \
+            app/build/outputs/apk/release/*.apk \
+            app/build/outputs/bundle/release/*.aab
+      - name: Remove keystore
+        if: always()
+        run: rm -f "$RUNNER_TEMP/release.jks"

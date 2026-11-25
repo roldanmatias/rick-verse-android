@@ -1,0 +1,29 @@
+name: Benchmark
+
+# Request counts are portable to a phone; timings come from a data-center network and are only comparable inside one
+# run. Macrobenchmark / baseline profiles need a real device, so they are run locally (see docs/benchmark.md).
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  requests:
+    name: REST vs GraphQL request counts
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/setup-android
+      - name: Run the live benchmark
+        env:
+          BENCHMARK_OUTPUT: ${{ runner.temp }}/benchmark.md
+        run: |
+          ./gradlew :contract-tests:benchmarkTest --console=plain
+          {
+            echo "### REST vs GraphQL (live API, CI runner network)"
+            cat "$BENCHMARK_OUTPUT"
+            echo
+            echo "_Request counts transfer to a phone; timings only compare within this run._"
+          } >> "$GITHUB_STEP_SUMMARY"

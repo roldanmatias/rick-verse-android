@@ -1,0 +1,20 @@
+# Release notes grouped by layer, using the labels applied by labeler.yml.
+changelog:
+  exclude:
+    labels: [skip-changelog]
+    authors: [dependabot]
+  categories:
+    - title: Domain
+      labels: [domain]
+    - title: Network and data (REST, GraphQL, local)
+      labels: [network, rest, graphql, local]
+    - title: Features and UI
+      labels: [features, app]
+    - title: CI, build and tooling
+      labels: [ci]
+    - title: Documentation
+      labels: [docs]
+    - title: Dependencies
+      labels: [dependencies]
+    - title: Other changes
+      labels: ["*"]
