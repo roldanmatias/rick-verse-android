@@ -4,44 +4,24 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.roldanmatias.rickverse.ui.theme.RickVerseAndroidTheme
+import androidx.compose.runtime.CompositionLocalProvider
+import com.roldanmatias.rickverse.core.designsystem.theme.RickVerseTheme
+import com.roldanmatias.rickverse.core.ui.LocalDataSourceLabel
+import com.roldanmatias.rickverse.navigation.RootNavigation
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            RickVerseAndroidTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding),
-                    )
+            RickVerseTheme {
+                // Becomes reactive to the Settings data source in Phase 7.
+                CompositionLocalProvider(LocalDataSourceLabel provides "REST") {
+                    RootNavigation()
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier,
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    RickVerseAndroidTheme {
-        Greeting("Android")
     }
 }

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error_offline">You\'re offline. Check your connection and try again.</string>
+    <string name="error_timeout">The request timed out. Please try again.</string>
+    <string name="error_not_found">We couldn\'t find what you were looking for.</string>
+    <string name="error_server">The server had a problem. Please try again in a moment.</string>
+    <string name="error_invalid_data">We received data we couldn\'t understand.</string>
+    <string name="error_unknown">Something went wrong. Please try again.</string>
+    <string name="action_retry">Retry</string>
+    <string name="pagination_failed">Couldn\'t load more</string>
+    <string name="pagination_loading">Loading more</string>
+    <string name="data_source_chip_description">Data source: %1$s</string>
+</resources>

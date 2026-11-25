@@ -17,11 +17,18 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
             add("implementation", project(":core:ui"))
             add("implementation", project(":core:designsystem"))
             add("implementation", libs.bundle("lifecycle-compose"))
-            add("implementation", libs.library("androidx-hilt-navigation-compose"))
+            add("implementation", libs.library("androidx-hilt-lifecycle-viewmodel-compose"))
             add("implementation", libs.library("kotlinx-coroutines-android"))
+            add("implementation", libs.library("androidx-lifecycle-viewmodel-savedstate"))
+            add("implementation", libs.library("coil-compose"))
 
             add("testImplementation", project(":core:testing"))
             add("testImplementation", libs.library("mockk"))
+            // Compose UI tests run on the JVM through Robolectric: no emulator, no Hilt, no ViewModel.
+            add("testImplementation", libs.library("robolectric"))
+            add("testImplementation", libs.library("androidx-compose-ui-test-junit4"))
+            add("testImplementation", platform(libs.library("androidx-compose-bom")))
+            add("testImplementation", libs.library("androidx-test-ext-junit"))
             add("androidTestImplementation", libs.library("androidx-test-ext-junit"))
         }
     }

@@ -52,6 +52,7 @@ public class LoggingInterceptor(
     }
 
     public companion object {
-        public val DEFAULT_REDACTED: Set<String> = setOf("Authorization", "Cookie", "Set-Cookie", "Proxy-Authorization")
+        public val DEFAULT_REDACTED: Set<String> =
+            setOf("Authorization", "Cookie", "Set-Cookie", "Proxy-Authorization")
     }
 }

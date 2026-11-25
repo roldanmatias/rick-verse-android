@@ -19,6 +19,8 @@ internal fun Project.configureKotlinCompiler() {
                 "-opt-in=kotlin.RequiresOptIn",
                 "-Xjsr305=strict",
             )
+            // Virtual-time testing APIs (runTest, advanceUntilIdle, ...) are marked experimental by design.
+            if (name.contains("Test")) optIn.add("kotlinx.coroutines.ExperimentalCoroutinesApi")
         }
     }
 }

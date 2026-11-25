@@ -89,3 +89,40 @@ bad air date -> `null`, malformed episode code -> `InvalidData`.
 **Why `withContext(dispatchers.io)` if Retrofit suspend is main-safe?** The network call is, but JSON decoding and
 mapping of a 20-item page are CPU work that should not sit on the caller's dispatcher; the dispatcher is injected so
 tests control it.
+
+## Phase 4: Characters list
+
+**MVVM + UDF.** `Screen(state, onIntent)`: state flows down, intents flow up. The ViewModel owns a `StateFlow<UiState>`
+(coming from BLoC: ViewModel ~ Cubit, `UiState` ~ state, intents ~ events).
+
+**Why one-off events are state, not a `SharedFlow`.** A `SharedFlow` event emitted while the UI is not collecting
+(rotation, background) is lost or replayed twice. State is always there when the UI comes back. Here, "refresh failed,
+list kept" is derived from state (`Failed` phase with non-empty items), so the snackbar survives rotation.
+
+**`collectAsStateWithLifecycle` vs `collectAsState`.** The lifecycle-aware one stops collecting when the lifecycle drops
+below STARTED (app in background), so upstream work can stop; `collectAsState` keeps collecting.
+
+**`WhileSubscribed(5_000)`.** The upstream (debounce, requests) runs only while someone collects. The 5 s grace period
+bridges a configuration change: the UI unsubscribes during rotation and re-subscribes within milliseconds, so the
+pipeline is not restarted and no request is repeated.
+
+**Stale responses.** One `channelFlow` per set of criteria under `flatMapLatest`. A new query cancels the previous
+one including its in-flight page-2 request; `send` after cancellation throws, so even a call that ignores cancellation
+cannot append old data (there is a test with a `NonCancellable` fake). The "generation counter" in the guide is
+unnecessary because cancellation scope == criteria scope.
+
+**Pagination.** The UI sends `ItemAppeared(lastVisibleId)`, de-duplicated by `snapshotFlow.distinctUntilChanged()` so it
+fires once per threshold crossing, not per frame. The ViewModel emits the *page number* it wants; the loop ignores any
+request whose page is not the current `nextPage`, so a duplicate intent is harmless.
+
+**Debounce with virtual time.** `advanceTimeBy(400)` tests the debounce instantly. The first emission bypasses the
+debounce (`merge(take(1), drop(1).debounce())`) so opening the screen does not wait 400 ms.
+
+**Compose stability.** No `@Immutable` in Domain; strong skipping is on by default and `config/compose/stability.conf` declares
+the Domain model packages stable. Check with `-Prickverse.composeMetrics=true`.
+
+**Environment findings.** `hiltViewModel` moved to `androidx.hilt:hilt-lifecycle-viewmodel-compose`; the old
+navigation-compose one is deprecated (and warnings are errors here). `createComposeRule`/`runComposeUiTest` are
+deprecated in Compose UI 1.13 in favour of `androidx.compose.ui.test.v2.runComposeUiTest`.
+
+**Not verified here:** the app was built and unit-tested but not launched, because this machine has no emulator or device.
