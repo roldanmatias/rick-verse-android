@@ -20,3 +20,17 @@ environment. Tick them off before presenting the project; do not quote numbers y
 
 ## Screenshots
 - [ ] Re-record goldens on the CI OS (`recordRoborazziDebug`) if the verify job runs on Linux
+
+## Final checklist (guide Phase 13)
+Verified locally by commands/tests:
+- [x] Zero compiler warnings (`allWarningsAsErrors`); detekt, ktlint, Lint clean in the last full gate
+- [x] `:core:domain` runtime classpath = coroutines, `javax.inject`, Kotlin stdlib only
+- [x] No `androidx.compose` import under any `presentation` package; Konsist and the grep script green
+- [x] No `!!` and no `catch (Exception/Throwable)` in production code (grep)
+Not verifiable here:
+- [ ] TalkBack, font scale 2.0 and dark theme on a device
+- [ ] Airplane mode on every screen (retry, no crash)
+- [ ] Release (R8) install and smoke test
+- [ ] README GIF (search -> detail -> switch to GraphQL -> network log), optional TalkBack clip
+- [ ] "Start here" issue with a 5-minute code tour; tags `v0.1.0`, `v0.2.0`, `v1.0.0`
+- [ ] You can explain every module in under a minute (`docs/interview-answers.md`)
