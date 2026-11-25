@@ -73,3 +73,19 @@ eviction, is queryable and can be observed. This API sends no useful cache heade
 
 **Environment finding:** OkHttp 5 ships MockWebServer as `mockwebserver3` (`MockResponse.Builder()`,
 `server.close()`), not the old `okhttp3.mockwebserver` API.
+
+## Phase 3: REST data layer
+
+**Quirks handled (each has a test against a real fixture):**
+1. An empty search is HTTP 404 -> an empty `Page`, not `NotFound` (only for list calls; `detail` 404 stays `NotFound`).
+2. `/episode/1` returns an object while `/episode/1,2` returns an array -> `OneOrMany<T>` serializer.
+3. `info.next` is a URL -> `parseNextPage` reads the `page` query parameter with `HttpUrl`.
+4. `air_date` is `"December 2, 2013"` -> `DateTimeFormatter` pinned to `Locale.ENGLISH`; the test runs with the
+   default locale set to Spanish.
+
+**Where Network meets Domain**: only `ErrorMapper.kt`. `:core:network` knows nothing about `DomainError`.
+**DTOs are `internal`**: the compiler stops them leaking. Mapping tolerates bad data: unknown status -> `Unknown`,
+bad air date -> `null`, malformed episode code -> `InvalidData`.
+**Why `withContext(dispatchers.io)` if Retrofit suspend is main-safe?** The network call is, but JSON decoding and
+mapping of a 20-item page are CPU work that should not sit on the caller's dispatcher; the dispatcher is injected so
+tests control it.
