@@ -268,3 +268,39 @@ remains. Be able to say that out loud: the number is high because the denominato
 **E2E.** `HiltTestRunner` + `@TestInstallIn` replacing `RepositoryModule` with fakes; semantic matchers only.
 `compose.ui.test.junit4.v2.createAndroidComposeRule` (the old one is deprecated: v2 uses `StandardTestDispatcher`).
 **Not run here** (no emulator): it compiles, it has not executed. First thing to run: `./gradlew :app:connectedDebugAndroidTest`.
+
+## Phase 10: Android extras
+
+**Offline-first.** Decorator over `@Remote`. Gotcha that needed a test: a list refresh (`@Upsert`) would wipe the detail
+columns of the same row, so list writes are insert-ignore + update-basics. Another: a row that only came from a list has no
+detail, so `gender == null` means "detail not cached" and offline detail correctly fails instead of showing a half-empty screen.
+LIKE wildcards in user input (`%`, `_`) are escaped; tested.
+
+**Migration.** Additive columns, nullable, so existing rows survive. The test uses the exported `1.json`/`2.json` through
+`MigrationTestHelper` under Robolectric (JVM), no emulator.
+
+**Dependency injection detail.** A Kotlin `() -> Long` cannot be injected by Dagger (`Function0<? extends Long>` mismatch),
+so the clock was dropped instead of fighting generics.
+
+**Performance.**
+* Compose compiler metrics (`-Prickverse.composeMetrics=true`): every restartable composable in `:feature:characters`,
+  `:core:ui` and `:core:designsystem` is skippable and none has unstable parameters, thanks to strong skipping and
+  `config/compose/stability.conf` (Domain models declared stable). I did **not** find a real recomposition problem to fix,
+  so there is no "before/after" story here and I won't invent one. Layout Inspector recomposition counts need a device.
+* Lists use `key` and `contentType`. Coil avatar sizing is fixed per slot.
+* R8 full mode + resource shrinking: `assembleRelease` succeeds with Hilt, Room, Apollo, Retrofit, kotlinx.serialization.
+  **Not run:** a smoke test on the release variant (needs a device); that is the real proof.
+* `:benchmark` (`com.android.test` + Baseline Profile plugin): `StartupBenchmark` (no compilation vs baseline profile),
+  `ScrollBenchmark`, `BaselineProfileGenerator`. It builds; it has **never run** (no device). The app has `profileinstaller`.
+* Debug-only StrictMode (`penaltyLog`) and LeakCanary.
+
+**Accessibility/adaptivity.** Rows are merged semantics, status is text plus colour, offline banner is a polite live
+region, screenshots exist at 2.0x font. The adaptive navigation suite switches bar/rail by window size.
+**Not done:** a list-detail (two-pane) layout for tablets/foldables, and a recorded TalkBack walkthrough.
+
+**Localization.** Spanish for every module, per-app language through `generateLocaleConfig` (Android 13+ system settings;
+below 13 would need AppCompat's locale APIs, not added). Lint's `PluralsCandidate` forced "Requests: %d" instead of "%d requests".
+
+**Security basics.** `networkSecurityConfig` forbids cleartext; `allowBackup=false` with explicit extraction rules;
+logging interceptor is debug-only and never logs bodies; no secrets exist in this repo (pattern for future ones:
+`local.properties`/CI secrets into `BuildConfig`, never committed).

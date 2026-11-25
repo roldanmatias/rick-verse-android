@@ -7,4 +7,6 @@ public data class CastMemberDetail(
     val originName: String,
     val locationName: String,
     val episodes: List<Episode>,
+    /** `true` while this is a locally cached copy (offline, or before the fresh one arrives). */
+    val fromCache: Boolean = false,
 )

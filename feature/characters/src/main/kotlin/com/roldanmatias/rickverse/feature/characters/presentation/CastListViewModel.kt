@@ -74,6 +74,7 @@ internal class CastListViewModel @Inject constructor(
                 statusFilter = status,
                 isRefreshing = content.isRefreshing,
                 nextPage = content.nextPage,
+                fromCache = content.fromCache,
             )
         }.stateIn(
             scope = viewModelScope,
@@ -183,6 +184,7 @@ internal class CastListViewModel @Inject constructor(
             items = merged,
             pagination = if (nextPage == null) PaginationState.Exhausted else PaginationState.Idle,
             nextPage = nextPage,
+            fromCache = fromCache,
         )
     }
 
@@ -194,6 +196,7 @@ internal class CastListViewModel @Inject constructor(
         val pagination: PaginationState = PaginationState.Idle,
         val isRefreshing: Boolean = false,
         val nextPage: Int? = null,
+        val fromCache: Boolean = false,
     )
 
     private companion object {

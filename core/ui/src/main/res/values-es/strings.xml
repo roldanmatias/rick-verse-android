@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error_offline">Estás sin conexión. Revisa tu conexión e inténtalo de nuevo.</string>
+    <string name="error_timeout">La solicitud tardó demasiado. Inténtalo de nuevo.</string>
+    <string name="error_not_found">No encontramos lo que buscabas.</string>
+    <string name="error_server">El servidor tuvo un problema. Inténtalo de nuevo en un momento.</string>
+    <string name="error_invalid_data">Recibimos datos que no pudimos entender.</string>
+    <string name="error_unknown">Algo salió mal. Inténtalo de nuevo.</string>
+    <string name="offline_banner">Estás sin conexión. Mostrando datos guardados.</string>
+    <string name="action_back">Atrás</string>
+    <string name="action_retry">Reintentar</string>
+    <string name="pagination_failed">No se pudo cargar más</string>
+    <string name="pagination_loading">Cargando más</string>
+    <string name="data_source_chip_description">Fuente de datos: %1$s</string>
+</resources>

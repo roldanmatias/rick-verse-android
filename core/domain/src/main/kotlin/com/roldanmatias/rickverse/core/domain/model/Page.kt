@@ -7,8 +7,9 @@ package com.roldanmatias.rickverse.core.domain.model
  * (a URL in REST, an `Int` in GraphQL).
  *
  * @property nextPage the number of the following page, or `null` on the last page.
+ * @property fromCache `true` when the network failed and this page was served from the local cache (offline banner).
  */
-public data class Page<out T>(val items: List<T>, val nextPage: Int?) {
+public data class Page<out T>(val items: List<T>, val nextPage: Int?, val fromCache: Boolean = false) {
     /** `true` when another page can be requested. */
     public val hasMore: Boolean get() = nextPage != null
 

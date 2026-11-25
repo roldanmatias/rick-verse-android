@@ -3,9 +3,14 @@ plugins {
     id("rickverse.android.compose")
     id("rickverse.hilt")
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.baselineprofile)
 }
 
 android {
+    androidResources {
+        // Per-app language (Android 13+ system settings): the locale list is generated from the resource folders.
+        generateLocaleConfig = true
+    }
     defaultConfig {
         applicationId = "com.roldanmatias.rickverse"
         versionCode = 1
@@ -24,6 +29,7 @@ dependencies {
     implementation(projects.core.preferences)
     implementation(projects.data.rest)
     implementation(projects.data.graphql)
+    implementation(projects.data.local)
     implementation(projects.feature.characters)
     implementation(projects.feature.episodes)
     implementation(projects.feature.settings)
@@ -38,6 +44,11 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
+
+    implementation(libs.androidx.profileinstaller)
+    baselineProfile(projects.benchmark)
+    // Debug-only leak detection: installs itself, ships nothing in release.
+    debugImplementation(libs.leakcanary.android)
 
     testImplementation(projects.core.testing)
 

@@ -60,7 +60,7 @@ internal fun NetworkLogScreen(
                 FilterOption(NetworkSource.GraphQl, state.filter, R.string.network_log_filter_graphql, onFilter)
             }
             Text(
-                "${state.totalRequests} requests · ${state.cacheHits} from cache",
+                stringResource(R.string.network_log_summary, state.totalRequests, state.cacheHits),
                 style = MaterialTheme.typography.labelLarge,
                 modifier = Modifier.padding(16.dp, 8.dp),
             )

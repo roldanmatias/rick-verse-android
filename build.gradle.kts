@@ -10,6 +10,9 @@ plugins {
     alias(libs.plugins.hilt) apply false
     alias(libs.plugins.apollo) apply false
     alias(libs.plugins.roborazzi) apply false
+    alias(libs.plugins.room) apply false
+    alias(libs.plugins.baselineprofile) apply false
+    alias(libs.plugins.android.test) apply false
     alias(libs.plugins.detekt) apply false
     alias(libs.plugins.spotless) apply false
     alias(libs.plugins.kover)
@@ -17,7 +20,8 @@ plugins {
 
 dependencies {
     // Aggregate coverage from every module that applies the convention plugins.
-    subprojects.filter { it.buildFile.exists() }.forEach { kover(it) }
+    // :benchmark is a com.android.test module (no Kover): it measures the app, it is not measured.
+    subprojects.filter { it.buildFile.exists() && it.path != ":benchmark" }.forEach { kover(it) }
 }
 
 kover {

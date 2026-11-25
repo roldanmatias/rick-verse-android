@@ -51,11 +51,11 @@ include(":data:rest")
 include(":data:graphql")
 include(":architecture-tests")
 include(":contract-tests")
-// include(":data:local")   // Phase 10
+include(":data:local")
 
 // Features
 include(":feature:characters")
 include(":feature:episodes")
 include(":feature:settings")
 
-// include(":benchmark") // Phase 10
+include(":benchmark")

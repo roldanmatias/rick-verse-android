@@ -22,4 +22,5 @@
     <string name="network_log_empty">No requests yet. Use the app and come back.</string>
     <string name="network_log_row">%1$s, status %2$d, %3$d ms</string>
     <string name="network_log_cache">cache</string>
+    <string name="network_log_summary">Requests: %1$d · From cache: %2$d</string>
 </resources>

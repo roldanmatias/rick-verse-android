@@ -11,3 +11,8 @@ public annotation class Rest
 @Qualifier
 @Retention(AnnotationRetention.RUNTIME)
 public annotation class GraphQl
+
+/** Qualifier for "whichever network backend is active" (REST or GraphQL), before the offline cache wraps it. */
+@Qualifier
+@Retention(AnnotationRetention.RUNTIME)
+public annotation class Remote

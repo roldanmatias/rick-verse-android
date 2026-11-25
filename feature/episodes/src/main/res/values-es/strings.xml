@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="episodes_title">Episodios</string>
+    <string name="episodes_end">Esos son todos los episodios</string>
+    <string name="episodes_empty">No se encontraron episodios</string>
+    <string name="episode_title">Episodio</string>
+    <string name="episode_aired">Emitido el %1$s</string>
+    <string name="episode_cast">Reparto (%1$d)</string>
+    <string name="episode_row_description">%1$s, %2$s</string>
+</resources>

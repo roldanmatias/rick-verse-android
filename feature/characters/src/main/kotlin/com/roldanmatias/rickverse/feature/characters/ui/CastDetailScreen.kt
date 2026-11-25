@@ -29,6 +29,7 @@ import com.roldanmatias.rickverse.core.designsystem.component.AvatarImage
 import com.roldanmatias.rickverse.core.designsystem.component.StatusBadge
 import com.roldanmatias.rickverse.core.domain.model.CastMemberDetail
 import com.roldanmatias.rickverse.core.ui.ErrorState
+import com.roldanmatias.rickverse.core.ui.OfflineBanner
 import com.roldanmatias.rickverse.core.ui.RickVerseTopBar
 import com.roldanmatias.rickverse.feature.characters.R
 import com.roldanmatias.rickverse.feature.characters.presentation.CastDetailUiState
@@ -74,7 +75,8 @@ internal fun CastDetailScreen(
 @Composable
 private fun DetailContent(detail: CastMemberDetail, onEpisodeClick: (Int) -> Unit, padding: PaddingValues) {
     LazyColumn(Modifier.fillMaxSize(), contentPadding = padding) {
-        item {
+        if (detail.fromCache) item(key = "offline", contentType = "banner") { OfflineBanner() }
+        item(key = "header", contentType = "header") {
             Header(detail)
         }
         item {

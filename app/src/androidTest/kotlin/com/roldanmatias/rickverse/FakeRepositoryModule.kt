@@ -1,5 +1,6 @@
 package com.roldanmatias.rickverse
 
+import com.roldanmatias.rickverse.core.domain.di.Remote
 import com.roldanmatias.rickverse.core.domain.error.DomainResult
 import com.roldanmatias.rickverse.core.domain.model.Page
 import com.roldanmatias.rickverse.core.domain.repository.CastRepository
@@ -23,6 +24,7 @@ import javax.inject.Singleton
 internal object FakeRepositoryModule {
     @Provides
     @Singleton
+    @Remote
     fun castRepository(): CastRepository =
         FakeCastRepository().apply {
             castHandler = { _, _ ->

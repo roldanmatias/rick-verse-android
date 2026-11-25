@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="characters_title">Personajes</string>
+    <string name="characters_search_hint">Buscar personajes</string>
+    <string name="characters_search_clear">Borrar búsqueda</string>
+    <string name="characters_filter_all">Todos</string>
+    <string name="characters_filter_description">Filtrar por estado</string>
+    <string name="status_alive">Vivo</string>
+    <string name="status_dead">Muerto</string>
+    <string name="status_unknown">Desconocido</string>
+    <string name="characters_empty_title">No se encontraron personajes</string>
+    <string name="characters_empty_message">Nada coincide con \"%1$s\". Prueba otra búsqueda o filtro.</string>
+    <string name="characters_empty_no_query">No hay nada que mostrar con este filtro.</string>
+    <string name="characters_end">Eso es todo 👽</string>
+    <string name="characters_row_description">%1$s, %2$s, %3$s</string>
+    <string name="characters_avatar_description">Retrato de %1$s</string>
+    <string name="characters_refresh_failed">No se pudo actualizar la lista</string>
+    <string name="detail_title">Personaje</string>
+    <string name="detail_episodes">Episodios (%1$d)</string>
+    <string name="detail_origin">Origen: %1$s</string>
+    <string name="detail_location">Visto por última vez: %1$s</string>
+</resources>

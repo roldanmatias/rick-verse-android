@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import com.roldanmatias.rickverse.core.designsystem.component.SkeletonList
 import com.roldanmatias.rickverse.core.ui.EmptyState
 import com.roldanmatias.rickverse.core.ui.ErrorState
+import com.roldanmatias.rickverse.core.ui.OfflineBanner
 import com.roldanmatias.rickverse.core.ui.PaginationFooter
 import com.roldanmatias.rickverse.core.ui.RickVerseTopBar
 import com.roldanmatias.rickverse.core.ui.toMessage
@@ -82,6 +83,7 @@ internal fun CastListScreen(
                 selected = state.statusFilter,
                 onSelected = { onIntent(CastListIntent.StatusSelected(it)) },
             )
+            if (state.fromCache) OfflineBanner()
             Content(state = state, onIntent = onIntent, onCastClick = onCastClick)
         }
     }

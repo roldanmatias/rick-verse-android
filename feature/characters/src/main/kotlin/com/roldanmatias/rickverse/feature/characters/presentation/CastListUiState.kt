@@ -16,6 +16,8 @@ internal data class CastListUiState(
     val isRefreshing: Boolean = false,
     /** The page number to request next, or `null` when there is none. */
     val nextPage: Int? = null,
+    /** The list is a saved copy because the network failed: the UI shows a non-blocking banner. */
+    val fromCache: Boolean = false,
 ) {
     sealed interface Phase {
         /** First page is loading and there is nothing to show yet. */

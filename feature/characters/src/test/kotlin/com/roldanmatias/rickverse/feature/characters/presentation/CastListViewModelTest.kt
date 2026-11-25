@@ -349,4 +349,19 @@ class CastListViewModelTest {
             assertEquals("morty", vm.uiState.first().query)
             assertEquals(CastMember.Status.Dead, vm.uiState.value.statusFilter)
         }
+
+    @Test
+    fun `a page served from the cache raises the offline flag and keeps the items`() = runTest(mainRule.dispatcher) {
+        repository.castHandler = { _, _ ->
+            DomainResult.Success(Page(TestData.castMembers(2), nextPage = null, fromCache = true))
+        }
+        val viewModel = viewModel()
+
+        viewModel.uiState.test {
+            assertEquals(CastListUiState.Phase.Loading, awaitItem().phase)
+            val state = awaitItem()
+            assertEquals(true, state.fromCache)
+            assertEquals(2, state.items.size)
+        }
+    }
 }

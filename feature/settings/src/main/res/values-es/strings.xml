@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_title">Ajustes</string>
+    <string name="settings_data_source">Fuente de datos</string>
+    <string name="settings_data_source_rest">REST</string>
+    <string name="settings_data_source_graphql">GraphQL</string>
+    <string name="settings_data_source_hint">Cambiar de fuente reinicia la app en su primera pantalla.</string>
+    <string name="settings_cache_policy">Política de caché de GraphQL</string>
+    <string name="settings_cache_cache_first">Caché primero</string>
+    <string name="settings_cache_network_first">Red primero</string>
+    <string name="settings_cache_network_only">Solo red</string>
+    <string name="settings_cache_cache_and_network">Caché y red</string>
+    <string name="settings_clear_cache">Borrar caché de GraphQL</string>
+    <string name="settings_cache_cleared">Caché de GraphQL borrada</string>
+    <string name="settings_diagnostics">Diagnóstico</string>
+    <string name="settings_network_log">Registro de red</string>
+    <string name="network_log_title">Registro de red</string>
+    <string name="network_log_clear">Borrar</string>
+    <string name="network_log_filter_all">Todo</string>
+    <string name="network_log_filter_rest">REST</string>
+    <string name="network_log_filter_graphql">GraphQL</string>
+    <string name="network_log_empty">Aún no hay solicitudes. Usa la app y vuelve.</string>
+    <string name="network_log_row">%1$s, estado %2$d, %3$d ms</string>
+    <string name="network_log_cache">caché</string>
+    <string name="network_log_summary">Solicitudes: %1$d · Desde caché: %2$d</string>
+</resources>
